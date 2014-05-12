@@ -55,8 +55,7 @@ public class ClientEmulator
 
   private URLGenerator    urlGen          = null;
 
-  // URL generator corresponding to the version to be used (PHP, EJB or
-  // Servlets)
+  // URL generator corresponding to the version to be used (PHP)
   private static float    slowdownFactor  = 0;
 
   private static boolean  endOfSimulation = false;
@@ -350,8 +349,6 @@ public class ClientEmulator
     Process webServerMonitor = null;
     Process cjdbcServerMonitor = null;
     Process[] dbServerMonitor = null;
-    Process[] ejbServerMonitor = null;
-    Process[] servletsServerMonitor = null;
     Process clientMonitor;
     Process[] remoteClientMonitor = null;
     Process[] remoteClient = null;
@@ -506,33 +503,6 @@ public class ClientEmulator
         dbServerMonitor[i] = client.startMonitoringProgram(
             (String) client.rubis.getDBServerNames().get(i), tmpDir
                 + "db_server" + i);
-      }
-
-      if (client.rubis.getServletsServerNames().size() > 0)
-        servletsServerMonitor = new Process[client.rubis
-            .getServletsServerNames().size()];
-      // Monitoring Servlets server, if any
-      for (int i = 0; i < client.rubis.getServletsServerNames().size(); i++)
-      {
-        System.out
-            .println("ClientEmulator: Starting monitoring program on Servlets server "
-                + client.rubis.getServletsServerNames().get(i) + "<br>\n");
-        servletsServerMonitor[i] = client.startMonitoringProgram(
-            (String) client.rubis.getServletsServerNames().get(i), tmpDir
-                + "servlets_server" + i);
-      }
-
-      if (client.rubis.getEJBServerNames().size() > 0)
-        ejbServerMonitor = new Process[client.rubis.getEJBServerNames().size()];
-      // Monitoring EJB server, if any
-      for (int i = 0; i < client.rubis.getEJBServerNames().size(); i++)
-      {
-        System.out
-            .println("ClientEmulator: Starting monitoring program on EJB server "
-                + client.rubis.getEJBServerNames().get(i) + "<br>\n");
-        ejbServerMonitor[i] = client.startMonitoringProgram(
-            (String) client.rubis.getEJBServerNames().get(i), tmpDir
-                + "ejb_server" + i);
       }
 
       // Monitor local client
@@ -725,11 +695,6 @@ public class ClientEmulator
           + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
           + ") statistics</A><br>");
     System.out.println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
-    if (client.rubis.getServletsServerNames().size() > 0)
-      System.out
-          .println("<A HREF=\"servlets_graphs.html\">Servlets graphs</A><br>");
-    if (client.rubis.getEJBServerNames().size() > 0)
-      System.out.println("<A HREF=\"ejb_graphs.html\">EJB graphs</A><br>");
 
     System.out
         .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"perf.html#node\">Node information</A><br>");
@@ -776,22 +741,6 @@ public class ClientEmulator
       client.printNodeInformation((String) client.rubis.getDBServerNames().get(
           0));
 
-      // Servlets server, if any
-      if (client.rubis.getServletsServerNames().size() > 0)
-      {
-        System.out.println("<br><B>Servlets server</B><br>");
-        client.printNodeInformation((String) client.rubis
-            .getServletsServerNames().get(0));
-      }
-
-      // EJB server, if any
-      if (client.rubis.getEJBServerNames().size() > 0)
-      {
-        System.out.println("<br><B>EJB server</B><br>");
-        client.printNodeInformation((String) client.rubis.getEJBServerNames()
-            .get(0));
-      }
-
       // Client
       System.out.println("<br><B>Local client</B><br>");
       client.printNodeInformation("localhost");
@@ -828,11 +777,6 @@ public class ClientEmulator
             + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
             + ") statistics</A><br>");
       System.out.println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
-      if (client.rubis.getServletsServerNames().size() > 0)
-        System.out
-            .println("<A HREF=\"servlets_graphs.html\">Servlets graphs</A><br>");
-      if (client.rubis.getEJBServerNames().size() > 0)
-        System.out.println("<A HREF=\"ejb_graphs.html\">EJB graphs</A><br>");
 
       System.out
           .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"#node\">Node information</A><br>");
@@ -895,196 +839,6 @@ public class ClientEmulator
       System.out.println("<IMG SRC=\"db_socks."
           + client.rubis.getGnuPlotTerminal() + "\">");
 
-      if (client.rubis.getServletsServerNames().size() > 0)
-      {
-        try
-        {
-          PrintStream outputStream = new PrintStream(new FileOutputStream(
-              reportDir + "servlets_graphs.html"));
-          System.setOut(outputStream);
-          System.setErr(outputStream);
-        }
-        catch (Exception ioe)
-        {
-          System.out.println("An error occured while creating file ("
-              + ioe.getMessage() + ")");
-        }
-
-        System.out
-            .println("<center><h2>*** Servlets servers graphs ***</h2></center><br>");
-        System.out
-            .println("<A HREF=\"perf.html\">Overall performance report</A><br>");
-        System.out
-            .println("<A HREF=\"stat_client0.html\">Main client (localhost) statistics</A><br>");
-        for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-          System.out.println("<A HREF=\"stat_client" + (i + 1)
-              + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
-              + ") statistics</A><br>");
-        System.out
-            .println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
-        if (client.rubis.getServletsServerNames().size() > 0)
-          System.out
-              .println("<A HREF=\"servlets_graphs.html\">Servlets graphs</A><br>");
-        if (client.rubis.getEJBServerNames().size() > 0)
-          System.out.println("<A HREF=\"ejb_graphs.html\">EJB graphs</A><br>");
-
-        System.out
-            .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"#node\">Node information</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#cpu_graph\">CPU usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#procs_graph\">Processes usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#mem_graph\">Memory usage graph</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#disk_graph\">Disk usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#net_graph\">Network usage graphs</A><br>");
-
-        System.out
-            .println("<br><A NAME=\"node\"></A><h3>Node Information</h3><br>");
-        for (int i = 0; i < client.rubis.getServletsServerNames().size(); i++)
-        {
-          System.out.println("<br><B>Servlets server " + i + "</B><br>");
-          client.printNodeInformation((String) client.rubis
-              .getServletsServerNames().get(i));
-        }
-
-        System.out.println("<br><A NAME=\"cpu_graph\"></A>");
-        System.out.println("<br><h3>CPU Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"servlets_cpu_busy."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"servlets_cpu_idle."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"servlets_cpu_user_kernel."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"procs_graph\"></A>");
-        System.out.println("<br><h3>Processes Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"servlets_procs."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"servlets_ctxtsw."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"mem_graph\"></A>");
-        System.out.println("<br><h3>Memory Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"servlets_mem_usage."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"servlets_mem_cache."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"disk_graph\"></A>");
-        System.out.println("<br><h3>Disk Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"servlets_disk_rw_req."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"servlets_disk_tps."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"net_graph\"></A>");
-        System.out.println("<br><h3>Network Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"servlets_net_rt_byt."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"servlets_net_rt_pack."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"servlets_socks."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-      }
-
-      if (client.rubis.getEJBServerNames().size() > 0)
-      {
-        try
-        {
-          PrintStream outputStream = new PrintStream(new FileOutputStream(
-              reportDir + "ejb_graphs.html"));
-          System.setOut(outputStream);
-          System.setErr(outputStream);
-        }
-        catch (Exception ioe)
-        {
-          System.out.println("An error occured while creating file ("
-              + ioe.getMessage() + ")");
-        }
-
-        System.out
-            .println("<center><h2>*** EJB servers graphs ***</h2></center><br>");
-        System.out
-            .println("<A HREF=\"perf.html\">Overall performance report</A><br>");
-        System.out
-            .println("<A HREF=\"stat_client0.html\">Main client (localhost) statistics</A><br>");
-        for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-          System.out.println("<A HREF=\"stat_client" + (i + 1)
-              + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
-              + ") statistics</A><br>");
-        System.out
-            .println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
-        if (client.rubis.getServletsServerNames().size() > 0)
-          System.out
-              .println("<A HREF=\"servlets_graphs.html\">Servlets graphs</A><br>");
-        if (client.rubis.getEJBServerNames().size() > 0)
-          System.out.println("<A HREF=\"ejb_graphs.html\">EJB graphs</A><br>");
-
-        System.out
-            .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"#node\">Node information</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#cpu_graph\">CPU usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#procs_graph\">Processes usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#mem_graph\">Memory usage graph</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#disk_graph\">Disk usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#net_graph\">Network usage graphs</A><br>");
-
-        System.out
-            .println("<br><A NAME=\"node\"></A><h3>Node Information</h3><br>");
-        for (int i = 0; i < client.rubis.getEJBServerNames().size(); i++)
-        {
-          System.out.println("<br><B>EJB server " + i + "</B><br>");
-          client.printNodeInformation((String) client.rubis.getEJBServerNames()
-              .get(i));
-        }
-
-        System.out.println("<br><A NAME=\"cpu_graph\"></A>");
-        System.out.println("<br><h3>CPU Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"ejb_cpu_busy."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"ejb_cpu_idle."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"ejb_cpu_user_kernel."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"procs_graph\"></A>");
-        System.out.println("<br><h3>Processes Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"ejb_procs."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"ejb_ctxtsw."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"mem_graph\"></A>");
-        System.out.println("<br><h3>Memory Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"ejb_mem_usage."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"ejb_mem_cache."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"disk_graph\"></A>");
-        System.out.println("<br><h3>Disk Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"ejb_disk_rw_req."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"ejb_disk_tps."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-
-        System.out.println("<br><A NAME=\"net_graph\"></A>");
-        System.out.println("<br><h3>Network Usage graphs</h3><p>");
-        System.out.println("<IMG SRC=\"ejb_net_rt_byt."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"ejb_net_rt_pack."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-        System.out.println("<IMG SRC=\"ejb_socks."
-            + client.rubis.getGnuPlotTerminal() + "\">");
-      }
-
       try
       {
         PrintStream outputStream = new PrintStream(new FileOutputStream(
@@ -1104,11 +858,6 @@ public class ClientEmulator
 
         System.out
             .println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
-        if (client.rubis.getServletsServerNames().size() > 0)
-          System.out
-              .println("<A HREF=\"servlets_graphs.html\">Servlets graphs</A><br>");
-        if (client.rubis.getEJBServerNames().size() > 0)
-          System.out.println("<A HREF=\"ejb_graphs.html\">EJB graphs</A><br>");
 
         System.out
             .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"perf.html#node\">Node information</A><br>");
@@ -1211,16 +960,6 @@ public class ClientEmulator
         }
         for (int i = 0; i < dbServerMonitor.length; i++)
           dbServerMonitor[i].waitFor();
-        if (servletsServerMonitor != null)
-        {
-          for (int i = 0; i < servletsServerMonitor.length; i++)
-            servletsServerMonitor[i].waitFor();
-        }
-        if (ejbServerMonitor != null)
-        {
-          for (int i = 0; i < ejbServerMonitor.length; i++)
-            ejbServerMonitor[i].waitFor();
-        }
       }
       catch (Exception e)
       {
@@ -1258,19 +997,6 @@ public class ClientEmulator
               + "cjdbc_server", reportDir);
         }
 
-        if (servletsServerMonitor != null)
-        {
-          for (int i = 0; i < servletsServerMonitor.length; i++)
-            client.getMonitoredData((String) client.rubis
-                .getServletsServerNames().get(i), tmpDir + "servlets_server"
-                + i, reportDir);
-        }
-        if (ejbServerMonitor != null)
-        {
-          for (int i = 0; i < ejbServerMonitor.length; i++)
-            client.getMonitoredData((String) client.rubis.getEJBServerNames()
-                .get(i), tmpDir + "ejb_server" + i, reportDir);
-        }
         // Now transfer the remote client html files
         for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
         {
@@ -1290,30 +1016,12 @@ public class ClientEmulator
       try
       {
         String[] cmd = null;
-        if (client.rubis.getEJBServerNames().size() > 0)
-        {
-          cmd = new String[7];
-          cmd[0] = "bench/ejb_generate_graphs.sh";
-        }
-        else if (client.rubis.getServletsServerNames().size() > 0)
-        {
-          cmd = new String[6];
-          cmd[0] = "bench/servlets_generate_graphs.sh";
-        }
-        else
-        {
-          cmd = new String[5];
-          cmd[0] = "bench/generate_graphs.sh";
-        }
+        cmd = new String[5];
+        cmd[0] = "bench/generate_graphs.sh";
         cmd[1] = reportDir;
         cmd[2] = client.rubis.getGnuPlotTerminal();
         cmd[3] = Integer.toString(client.rubis.getRemoteClients().size() + 1);
         cmd[4] = Integer.toString(client.rubis.getDBServerNames().size());
-        if (client.rubis.getServletsServerNames().size() > 0)
-          cmd[5] = Integer.toString(client.rubis.getServletsServerNames()
-              .size());
-        if (client.rubis.getEJBServerNames().size() > 0)
-          cmd[6] = Integer.toString(client.rubis.getEJBServerNames().size());
         Process graph = Runtime.getRuntime().exec(cmd);
         // Need to read input so program does not stall.
         BufferedReader read = new BufferedReader(new InputStreamReader(graph

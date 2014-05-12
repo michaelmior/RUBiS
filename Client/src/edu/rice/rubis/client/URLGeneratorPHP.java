@@ -30,7 +30,7 @@ package edu.rice.rubis.client;
  * well as the directories where the scripts and HTML files reside. For example:
  * 
  * <pre>
- * URLGenerator rubisWeb = new URLGeneratorEJB("www.testbed.cs.rice.edu", 80, "/PHP", "/PHP");
+ * URLGenerator rubisWeb = new URLGeneratorPHP("www.testbed.cs.rice.edu", 80, "/PHP", "/PHP");
  * </pre>
  * 
  * @author <a href="mailto:cecchet@rice.edu">Emmanuel Cecchet</a> and <a

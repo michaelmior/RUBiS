@@ -4,14 +4,10 @@ httpd_port = 80
 
 # C-JDBC server information
 cjdbc_hostname = 
-httpd_ejb_html_path = /EJB_HTML
-httpd_ejb_script_path = /servlet
-httpd_servlets_html_path = /Servlet_HTML
-httpd_servlets_script_path = /servlet
 httpd_php_html_path = /PHP
 httpd_php_script_path = /PHP
 
-# Precise which version to use. Valid options are : PHP, Servlets, EJB
+# Precise which version to use. Valid options are : PHP
 httpd_use_version = PHP
 
 # Workload: precise which transition table to use

@@ -47,7 +47,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the About Me script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return About Me script name
    */
@@ -55,7 +55,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Browse Categories script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Browse Categories script name
    */
@@ -63,7 +63,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Browse Regions script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Browse Regions script name
    */
@@ -71,7 +71,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Buy Now script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return Buy Now script name
    */
@@ -79,7 +79,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Buy Now Auth script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return Buy Now Auth script name
    */
@@ -87,7 +87,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Put Bid script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return Put Bid script name
    */
@@ -95,7 +95,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Put Bid Auth script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return Put Bid Auth script name
    */
@@ -103,7 +103,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Put Comment script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return Put Comment script name
    */
@@ -111,7 +111,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Put Comment Auth script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Put Comment Auth script name
    */
@@ -119,7 +119,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Register Item script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Register Item script name
    */
@@ -127,7 +127,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Register User script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Register User script name
    */
@@ -135,7 +135,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Search Items By Category script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Search Items By Category script name
    */
@@ -143,7 +143,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Search Items By Region script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Search Items By Region script name
    */
@@ -151,7 +151,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Sell Item Form script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Sell Item Form script name
    */
@@ -159,7 +159,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Store Buy Now script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Store Buy Now script name
    */
@@ -167,7 +167,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Store Bid script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return Store Bid script name
    */
@@ -175,7 +175,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the Store Comment script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return Store Comment script name
    */
@@ -183,7 +183,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the View Bid History script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return View Bid History script name
    */
@@ -191,7 +191,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the View Item script according to the implementation
-   * (PHP, EJB or Servlets).
+   * (PHP).
    * 
    * @return View Item script name
    */
@@ -199,7 +199,7 @@ public abstract class URLGenerator
 
   /**
    * Returns the name of the View User Info script according to the
-   * implementation (PHP, EJB or Servlets).
+   * implementation (PHP).
    * 
    * @return View User Info script name
    */

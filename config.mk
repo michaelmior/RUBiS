@@ -21,10 +21,6 @@ CP = /bin/cp
 RM = /bin/rm
 MKDIR = /bin/mkdir
 
-
-# EJB server: supported values are jonas or jboss
-EJB_SERVER = jonas
-
 # DB server: supported values are MySQL or PostgreSQL
 DB_SERVER = MySQL
 

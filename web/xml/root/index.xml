@@ -77,26 +77,9 @@
       </s2>
 
       <s2 name="Design Patterns" anchor="design">
-	<p>Several versions of RUBiS are implemented using three different technologies: <a href="design.html#PHP">PHP</a>,
-	<a href="design.html#Servlet">Java
-	servlets</a> and <a href="design.html#EJB">EJB</a> (Enterprise Java Bean).
-	</p>
-	<p>In PHP and Java servlets, the application programmer is responsible
+	<p>In PHP, the application programmer is responsible
 	for writing the SQL queries. In order to arrive at a fair comparison, we
 	use exactly the same queries to the database in both environments.
-	</p>
-	<p>An EJB server provides a number of services such as database access (JDBC),  
-	transactions (JTA), messaging (JMS), naming (JNDI) and management support (JMX). 
-	The EJB server manages one or more EJB containers. The container is responsible 
-	for providing component pooling and lifecycle management, client session management, 
-	database connection pooling, persistence, transaction management, authentication and 
-	access control.EJB containers automatically manage bean persistence, relieving the
-	programmer of writing SQL code. We use these facilities to implement various <a href="design.html#ejb_patterns">EJB versions</a>
-	of RUBiS.</p>
-	<p>While using EJB 1.1 or 2.0 CMP model, we use session beans for complex queries 
-	that cannot be executed using CMP.</p>
-	<p>The Java servlets are used only as the presentation tier, to generate the HTML 
-	reply from the information retrieved from the bean.
 	</p>
       </s2>
 

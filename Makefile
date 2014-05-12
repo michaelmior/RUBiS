@@ -3,24 +3,6 @@
 include config.mk
 
 ####################
-#   EJB versions   #
-####################
-
-db_id:
-	cd EJB_DB_id ; make all
-
-eb_id:
-	cd EJB_EntityBean_id ; make all
-
-
-#########################
-#    Servlets version   #
-#########################
-
-servlets: 
-	cd Servlets ; make all
-
-####################
 #       Client     #
 ####################
 
@@ -38,7 +20,7 @@ emulator:
 #       Global rules       #
 ############################
 
-DIRS = Client Servlets EJB_DB_id EJB_EntityBean_id EJB_SessionBean EJB_Session_facade
+DIRS = Client
 
 all: flush_cache
 	-for d in ${DIRS}; do (cd $$d ; ${MAKE} all); done

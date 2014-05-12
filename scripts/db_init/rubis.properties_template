@@ -2,16 +2,8 @@
 httpd_hostname = labospc13
 httpd_port = 8080
 
-# Precise which version to use. Valid options are : PHP, Servlets, EJB
-httpd_use_version = Servlets
-
-ejb_server =
-ejb_html_path =
-ejb_script_path =
-
-servlets_server = labospc13
-servlets_html_path = /Servlet_HTML
-servlets_script_path = /Servlet_HTML/servlet
+# Precise which version to use. Valid options are : PHP
+httpd_use_version = PHP
 
 php_html_path =
 php_script_path =

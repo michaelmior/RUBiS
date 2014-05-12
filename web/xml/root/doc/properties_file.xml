@@ -18,22 +18,8 @@
 <p><code>httpd_hostname = httpserver.cs.rice.edu</code></p>
 <p><code>httpd_port = 80</code></p>
 <p><em><code># Precise which version will be used by the
-client. Valid options are : PHP, Servlets, EJB (respect the case)</code></em></p>
-<p><code>httpd_use_version = Servlets</code></p>
-
-<p><strong># EJB server information</strong></p>
-<p><code>ejb_server = jonas.cs.rice.edu</code><em><code># leave
-this field blank if you don't use the EJB version or if the EJB server
-is co-located with another server.</code></em></p>
-<p><code>ejb_html_path = /ejb_rubis_web</code></p>
-<p><code>ejb_script_path = /servlet</code></p>
-
-<p><strong># Servlet server information</strong></p>
-<p><code>servlets_server = tomcat.cs.rice.edu</code> <em><code># leave
-this field blank if you don't use the Servlets or EJB version or if the
-Tomcat runs on the same machine as the Web or Database server.</code></em></p>
-<p><code>servlets_html_path = /Servlet_HTML</code></p>
-<p><code>servlets_script_path = /servlet</code></p>
+client. Valid options are : PHP (respect the case)</code></em></p>
+<p><code>httpd_use_version = PHP</code></p>
 
 <p><strong># PHP server information</strong></p>
 <p><code>php_html_path = /PHP</code></p>

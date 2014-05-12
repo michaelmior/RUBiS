@@ -48,12 +48,6 @@ public class RUBiSProperties
   private String                webSiteName;
   private int                   webSitePort;
   private String                cjdbcSiteName;
-  private Vector                EJBServers;
-  private String                EJBHTMLPath;
-  private String                EJBScriptPath;
-  private Vector                ServletsServers;
-  private String                ServletsHTMLPath;
-  private String                ServletsScriptPath;
   private String                PHPHTMLPath;
   private String                PHPScriptPath;
   private String                useVersion;
@@ -188,45 +182,6 @@ public class RUBiSProperties
       System.out.print("CJDBC server name : ");
       cjdbcSiteName = getProperty("cjdbc_hostname");
       System.out.println(cjdbcSiteName + "<br>");
-
-      System.out.print("EJB Server            : ");
-      StringTokenizer nodes = new StringTokenizer(getProperty("ejb_server"),
-          ",");
-      EJBServers = new Vector(nodes.countTokens());
-      while (nodes.hasMoreTokens())
-      {
-        String name = nodes.nextToken().trim();
-        EJBServers.add(name);
-        System.out.print(name);
-        if (nodes.hasMoreTokens())
-          System.out.print(", ");
-      }
-      System.out.println("<br>");
-      System.out.print("EJB HTML files path   : ");
-      EJBHTMLPath = getProperty("ejb_html_path");
-      System.out.println(EJBHTMLPath + "<br>");
-      System.out.print("EJB Script files path : ");
-      EJBScriptPath = getProperty("ejb_script_path");
-      System.out.println(EJBScriptPath + "<br><br>");
-
-      System.out.print("Servlets server            : ");
-      nodes = new StringTokenizer(getProperty("servlets_server"), ",");
-      ServletsServers = new Vector(nodes.countTokens());
-      while (nodes.hasMoreTokens())
-      {
-        String name = nodes.nextToken().trim();
-        ServletsServers.add(name);
-        System.out.print(name);
-        if (nodes.hasMoreTokens())
-          System.out.print(", ");
-      }
-      System.out.println("<br>");
-      System.out.print("Servlets HTML files path   : ");
-      ServletsHTMLPath = getProperty("servlets_html_path");
-      System.out.println(ServletsHTMLPath + "<br>");
-      System.out.print("Servlets Script files path : ");
-      ServletsScriptPath = getProperty("servlets_script_path");
-      System.out.println(ServletsScriptPath + "<br><br>");
 
       System.out.print("PHP HTML files path   : ");
       PHPHTMLPath = getProperty("php_html_path");
@@ -455,16 +410,10 @@ public class RUBiSProperties
       if (useVersion.compareTo("PHP") == 0)
         urlGen = new URLGeneratorPHP(webSiteName, webSitePort, PHPHTMLPath,
             PHPScriptPath);
-      else if (useVersion.compareTo("EJB") == 0)
-        urlGen = new URLGeneratorEJB(webSiteName, webSitePort, EJBHTMLPath,
-            EJBScriptPath);
-      else if (useVersion.compareTo("Servlets") == 0)
-        urlGen = new URLGeneratorServlets(webSiteName, webSitePort,
-            ServletsHTMLPath, ServletsScriptPath);
       else
       {
         System.err.println("Sorry but '" + useVersion
-            + "' is not supported. Only PHP, EJB and Servlets are accepted.");
+            + "' is not supported. Only PHP is accepted.");
         return null;
       }
       System.out.println("Using " + useVersion + " version.<br>");
@@ -506,26 +455,6 @@ public class RUBiSProperties
   public Vector getDBServerNames()
   {
     return dbServers;
-  }
-
-  /**
-   * Get the EJB server name
-   * 
-   * @return EJB server name
-   */
-  public Vector getEJBServerNames()
-  {
-    return EJBServers;
-  }
-
-  /**
-   * Get the Servlets server name
-   * 
-   * @return Servlets server name
-   */
-  public Vector getServletsServerNames()
-  {
-    return ServletsServers;
   }
 
   /**

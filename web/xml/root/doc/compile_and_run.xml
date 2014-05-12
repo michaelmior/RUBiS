@@ -49,49 +49,6 @@
        </li>
       </ul>
 
-   <p>For the EJB version :</p>
-      <ul>
-       <li>
-            <a href="http://jakarta.apache.org/tomcat/">Jakarta Tomcat</a> v3.2.4 or
-            compatible
-       </li>
-       <li>
-            EJB server <a href="http://www.objectweb.org">JOnAS </a>v2.x, v3.0, 3.1 or
-            <a href="http://www.jboss.org">JBoss</a> v2.x, v3.0, 3.2
-
-       </li>
-       <li>
-            Java servlets extension for Java platform (JSDK)
-       </li>
-       <li>
-            <a href="http://java.sun.com/products/ejb/docs.html">Enterprise Java Beans
-            extension</a> for Java platform
-       </li>
-       <li>
-            MySQL JDBC driver (successfully tested with <a href="http://mmmysql.sourceforge.net/">mm-mysql</a>
-            JDBC driver)
-       </li>
-       <li>
-            EJB versions now support PostgreSQL v7.1 with the
-            provided type 4 JDBC driver
-       </li>
-      </ul>
-
-   <p>For the Java servlets version:</p>
-      <ul>
-       <li>
-            Jakarta Tomcat v3.2.4 or compatible
-       </li>
-       <li>
-            <a href="http://java.sun.com/products/servlet/index.html">Java servlets
-            extension</a> for Java platform (JSDK)
-       </li>
-       <li>
-            MySQL JDBC driver (successfully tested with <a href="http://mmmysql.sourceforge.net/">mm-mysql</a>
-            JDBC driver)
-       </li>
-      </ul>
-
    <p>For the PHP version:</p>
       <ul>
        <li>
@@ -115,8 +72,6 @@
       <p>JAVADOC = path to javadoc, the documentation
       generator</p>
       <p>JAR = path to the jar util</p>
-      <p>EJB_SERVER = choose the EJB Server you want to
-      use (either jonas or jboss) - Warning, this value is case sensitive.</p>
       <p>DB_SERVER = choose the Database server you will
       use (either MySQL or PostgreSQL) - Warning, this value is case sensitive.</p>
       </s2>
@@ -130,8 +85,6 @@
       <p>classes.dir = directory in which the .class files will be created</p>
       <p>dist = directory in which the jar and war files will be created</p>
       <p>web.dir = directory containing the html files for building a war file</p>
-      <p>ejb.server = choose the EJB Server you want to
-      use (either jonas or jboss) - Warning, this value is case sensitive.</p>
       <p>db.server = choose the Database server you will
       use (either MySQL or PostgreSQL) - Warning, this value is case sensitive.</p>
       </s2>
@@ -142,66 +95,10 @@
       <tr>
       <td><code>make world or ant all</code></td>
 
-      <td>build everything (EJB, Servlets, documentation,
+      <td>build everything (documentation,
       ...)</td>
       </tr>
       </table>
-
-      <p><strong>EJB version</strong></p>
-      <p>Setup the environment variables for the EJB server and the database server in the config.mk file for make or in the
-      build.properties file for Ant then go in the subdirectory of the version you are interested in (/RUBiS/EJB_VersionName).
-      Available commands are:</p>
-      <table border="1" width="100%">
-      <tr>
-      <td><code>make all or ant dist</code></td>
-
-      <td>compile the beans, the servlets for the EJB version
-      and the client, then copy the appropriate deployment descriptor in the
-      META-INF directoty and generate the corresponding jar files</td>
-      </tr>
-      
-      <tr>
-      <td><code>make clean or ant clean</code></td>
-
-      <td>remove class and jar files</td>
-      </tr>
-
-      <tr>
-      <td><code>make doc or ant doc</code></td>
-
-      <td>generate the javadoc documentation</td>
-      </tr>
-      </table>
-
-      <p>To use the EJB version of RUBiS you first have to configure and start
-      the <a href="config.html#config_apache">Apache HTTP server</a>, <a href="#JOnAS">JOnAS EJB
-      server</a> or JBoss EJB server and <a href="config.html#config_tomcat">Tomcat</a>.</p>
-
-      <p><strong>Servlets version</strong></p>
-      <p>Go in the subdirectory of the servlets version (/RUBiS/Servlets).
-      Available commands are:</p>
-      <table border="1" width="100%">
-      <tr>
-      <td><code>make servlets or ant dist</code></td>
-
-      <td>compile the servlets</td>
-      </tr>
-
-      <tr>
-      <td><code>make clean or ant clean</code></td>
-
-      <td>remove class files</td>
-      </tr>
-
-      <tr>
-      <td><code>make doc or ant doc</code></td>
-
-      <td>generate the javadoc documentation</td>
-      </tr>
-      </table>
-
-      <p>To use the servlet version of RUBiS, you first have to configure and
-      start the <a href="config.html#config_apache">Apache HTTP server</a> and <a href="config.html#config_tomcat">Tomcat</a>.</p>
 
       <p><strong>PHP version</strong></p>
       <p>To use the PHP version of RUBiS, you just have to configure and start
@@ -239,44 +136,9 @@
       <td><code>make doc</code></td>
 
       <td>generate the javadoc documentation for
-      the java client, the servlets version and each EJB versions.</td>
+      the java client.</td>
       </tr>
       </table>
-
-      <p><anchor name="JOnAS"></anchor><strong>EJB server : JOnAS</strong></p>
-      <p>Go in the subdirectory of the version you are interested in:</p>
-      <table border="1" width="100%">
-      <tr>
-      <td><code>/RUBiS/VersionName/jonas_start.sh</code></td>
-
-      <td>start the EJB server</td>
-      </tr>
-
-      <tr>
-      <td><code>/RUBiS/VersionName/jonas_stop.sh</code></td>
-
-      <td>stop the EJB server</td>
-      </tr>
-      </table>
-
-      <p><anchor name="tomcat"></anchor><strong>Servlets server : Tomcat</strong></p>
-      <p>Go in the subdirectory of the version you are interested in:</p>
-      <table border="1" width="100%" >
-      <tr>
-      <td><code>/RUBiS/VersionName/tomcat_start.sh</code></td>
-
-      <td>start Tomcat to be used with the EJB version of RUBiS. You may have
-      to alter this script to specify the node JOnAS is running on (see <a href="config.html#config_tomcat">Tomcat</a>
-      configuration).</td>
-      </tr>
-
-      <tr>
-      <td><code>/RUBiS/VersionName/tomcat_stop.sh</code></td>
-
-      <td>stop Tomcat</td>
-      </tr>
-      </table>
-      </s2>
 
       <s2 name="Performance Tuning Notes" anchor="tuning">
       <p>Here are some hints if you want to handle a high number of clients with
@@ -304,8 +166,6 @@
       --set-variable max_connections=600 -O bdb_cache_size=256M -O bdb_log_buffer_size=1M
       -O key_buffer_size=256M -O bdb_max_lock=2000000 -O sort_buffer=32M &amp;</code></p>
       <ul>
-      <li>
-      check the size of the database connection pool of the EJB server in mysql.properties.</li>
       </ul>
       </s2>
 
