@@ -5,7 +5,7 @@
     $scriptName = "StoreComment.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $to = $_POST['to'];
     if ($to == null)
     {
@@ -15,7 +15,7 @@
          printError($scriptName, $startTime, "PutComment", "You must provide a 'to user' identifier!<br>");
          exit();
       }
-    }      
+    }
 
     $from = $_POST['from'];
     if ($from == null)
@@ -49,7 +49,7 @@
          exit();
       }
     }
-      
+
     $comment = $_POST['comment'];
     if ($comment == null)
     {
@@ -82,9 +82,9 @@
 
     printHTMLheader("RUBiS: Comment posting");
     print("<center><h2>Your comment has been successfully posted.</h2></center>\n");
-    
+
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

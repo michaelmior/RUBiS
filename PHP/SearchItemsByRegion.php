@@ -5,7 +5,7 @@
     $scriptName = "SearchItemsByCategories.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $regionId = $_POST['region'];
     if ($regionId == null)
     {
@@ -16,7 +16,7 @@
          exit();
       }
     }
-      
+
     $categoryId = $_POST['category'];
     if ($categoryId == null)
     {
@@ -27,7 +27,7 @@
          exit();
       }
     }
-      
+
     $page = $_POST['page'];
     if ($page == null)
     {
@@ -35,7 +35,7 @@
       if ($page == null)
         $page = 0;
     }
-      
+
     $nbOfItems = $_POST['nbOfItems'];
     if ($nbOfItems == null)
     {
@@ -46,7 +46,7 @@
 
     printHTMLheader("RUBiS: Search items by region");
     print("<h2>Items in category $categoryName</h2><br><br>");
-    
+
     getDatabaseLink($link);
     $result = mysql_query("SELECT items.id,items.name,items.initial_price,items.max_bid,items.nb_of_bids,items.end_date FROM items,users WHERE items.category=$categoryId AND items.seller=users.id AND users.region=$regionId AND end_date>=NOW() LIMIT ".$page*$nbOfItems.",$nbOfItems") or die("ERROR: Query failed");
     if (mysql_num_rows($result) == 0)
@@ -82,7 +82,7 @@
             "<TD>".$row["end_date"].
             "<TD><a href=\"/PHP/PutBidAuth.php?itemId=".$row["id"]."\"><IMG SRC=\"/PHP/bid_now.jpg\" height=22 width=90></a>");
     }
-    print("</TABLE>");  
+    print("</TABLE>");
     if ($page == 0)
       print("<p><CENTER>\n<a href=\"/PHP/SearchItemsByRegion.php?category=$categoryId&region=$regionId".
            "&categoryName=".urlencode($categoryName)."&page=".($page+1)."&nbOfItems=$nbOfItems\">Next page</a>\n</CENTER>\n");
@@ -94,7 +94,7 @@
 
     mysql_free_result($result);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

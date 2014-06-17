@@ -5,7 +5,7 @@
     $scriptName = "StoreBid.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $userId = $_POST['userId'];
     if ($userId == null)
     {
@@ -16,7 +16,7 @@
          exit();
       }
     }
-      
+
     $itemId = $_POST['itemId'];
     if ($itemId == null)
     {
@@ -27,7 +27,7 @@
          exit();
       }
     }
-      
+
     $minBid = $_POST['minBid'];
     if ($minBid == null)
     {
@@ -89,22 +89,22 @@
     {
       printError("<h3>You cannot request $qty items because only $maxQty are proposed !<br></h3>");
       return ;
-    }      
+    }
     if ($bid < $minBid)
     {
       printError("<h3>Your bid of \$$bid is not acceptable because it is below the \$$minBid minimum bid !<br></h3>");
       return ;
-    }      
+    }
     if ($maxBid < $minBid)
     {
       printError("<h3>Your maximum bid of \$$maxBid is not acceptable because it is below the \$$minBid minimum bid !<br></h3>");
       return ;
-    }      
+    }
     if ($maxBid < $bid)
     {
       printError("<h3>Your maximum bid of \$$maxBid is not acceptable because it is below your current bid of \$$bid !<br></h3>");
       return ;
-    }      
+    }
 
     getDatabaseLink($link);
 
@@ -122,9 +122,9 @@
 
     printHTMLheader("RUBiS: Bidding result");
     print("<center><h2>Your bid has been successfully processed.</h2></center>\n");
-    
+
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

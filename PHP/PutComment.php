@@ -5,7 +5,7 @@
     $scriptName = "PutComment.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $to = $_POST['to'];
     if ($to == null)
     {
@@ -15,7 +15,7 @@
          printError($scriptName, $startTime, "PutComment", "You must provide a user identifier!<br>");
          exit();
       }
-    }      
+    }
 
     $nickname = $_POST['nickname'];
     if ($nickname == null)
@@ -57,7 +57,7 @@
     if ($userId == -1)
     {
       printError($scriptName, $startTime, "PutComment", "You don't have an account on RUBiS!<br>You have to register first.<br>\n");
-      exit();	
+      exit();
     }
 
     $result = mysql_query("SELECT * FROM items WHERE items.id=$itemId") or die("ERROR: Item query failed");
@@ -101,7 +101,7 @@
 
     mysql_free_result($result);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

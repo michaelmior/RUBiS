@@ -5,7 +5,7 @@
     $scriptName = "ViewBidHistory.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $itemId = $_POST['itemId'];
     if ($itemId == null)
     {
@@ -16,7 +16,7 @@
          exit();
       }
     }
-      
+
     getDatabaseLink($link);
 
     // Get the item name
@@ -30,7 +30,7 @@
     $itemNameRow = mysql_fetch_array($itemNameResult);
     $itemName = $itemNameRow["name"];
 
-    
+
     // Get the list of bids for this item
     $bidsListResult = mysql_query("SELECT * FROM bids WHERE item_id=$itemId ORDER BY date DESC", $link) or die("ERROR: Bids list query failed");
     if (mysql_num_rows($bidsListResult) == 0)
@@ -49,7 +49,7 @@
     	$bidAmount = $bidsListRow["bid"];
     	$bidDate = $bidsListRow["date"];
     	$userId = $bidsListRow["user_id"];
-	// Get the bidder nickname	
+	// Get the bidder nickname
     	if ($userId != 0)
 	{
 	  $userNameResult = mysql_query("SELECT nickname FROM users WHERE id=$userId", $link) or die("ERROR: User nickname query failed");
@@ -72,7 +72,7 @@
     mysql_free_result($bidsListResult);
     mysql_free_result($itemNameResult);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

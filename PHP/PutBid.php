@@ -5,7 +5,7 @@
     $scriptName = "PutBid.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $nickname = $_POST['nickname'];
     if ($nickname == null)
     {
@@ -46,7 +46,7 @@
     if ($userId == -1)
     {
       printError($scriptName, $startTime, "Authentication", "You don't have an account on RUBiS!<br>You have to register first.<br>\n");
-      exit();	
+      exit();
     }
 
     $result = mysql_query("SELECT * FROM items WHERE items.id=$itemId") or die("ERROR: Query failed");
@@ -92,7 +92,7 @@
     printHTMLheader("RUBiS: Bidding");
     printHTMLHighlighted("You are ready to bid on: ".$row["name"]);
     print("<TABLE>\n".
-          "<TR><TD>Currently<TD><b><BIG>$maxBid</BIG></b>\n");    
+          "<TR><TD>Currently<TD><b><BIG>$maxBid</BIG></b>\n");
 
     // Check if the reservePrice has been met (if any)
     $reservePrice = $row["reserve_price"];
@@ -152,7 +152,7 @@
     mysql_free_result($maxBidResult);
     mysql_free_result($result);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

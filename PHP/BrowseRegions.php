@@ -7,7 +7,7 @@
     $startTime = getMicroTime();
 
     printHTMLheader("RUBiS available regions");
-    
+
     getDatabaseLink($link);
     $result = mysql_query("SELECT * FROM regions", $link) or die("ERROR: Query failed");
     if (mysql_num_rows($result) == 0)
@@ -21,7 +21,7 @@
     }
     mysql_free_result($result);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

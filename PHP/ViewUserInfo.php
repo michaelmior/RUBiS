@@ -5,7 +5,7 @@
     $scriptName = "ViewUserInfo.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $userId = $_POST['userId'];
     if ($userId == null)
     {
@@ -16,7 +16,7 @@
          exit();
       }
     }
-      
+
     getDatabaseLink($link);
     $userResult = mysql_query("SELECT * FROM users WHERE users.id=$userId", $link) or die("ERROR: Query failed");
     if (mysql_num_rows($userResult) == 0)
@@ -70,7 +70,7 @@
     mysql_free_result($userResult);
     mysql_free_result($commentsResult);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

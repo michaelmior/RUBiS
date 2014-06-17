@@ -5,7 +5,7 @@
     $scriptName = "SellItemForm.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $category = $_POST['category'];
     if ($category == null)
     {
@@ -15,7 +15,7 @@
          printError($scriptName, $startTime, "SellItemForm", "You must provide a category identifier!<br>");
          exit();
       }
-    }      
+    }
 
     $user = $_POST['user'];
     if ($user == null)
@@ -26,7 +26,7 @@
          printError($scriptName, $startTime, "SellItemForm", "You must provide a user identifier!<br>");
          exit();
       }
-    }      
+    }
 
     printHTMLheader("RUBiS: Sell your item");
     include("sellItemForm.html");

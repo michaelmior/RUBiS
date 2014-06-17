@@ -5,7 +5,7 @@
     $scriptName = "PutBidAuth.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $itemId = $_POST['itemId'];
     if ($itemId == null)
     {
@@ -15,7 +15,7 @@
          printError($scriptName, $startTime, "Authentification for bidding", "You must provide an item identifier!<br>");
          exit();
       }
-    }      
+    }
 
     printHTMLheader("RUBiS: User authentification for bidding");
     include("put_bid_auth_header.html");

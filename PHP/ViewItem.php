@@ -5,7 +5,7 @@
     $scriptName = "ViewItem.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $itemId = $_POST['itemId'];
     if ($itemId == null)
     {
@@ -16,7 +16,7 @@
          exit();
       }
     }
-      
+
     getDatabaseLink($link);
     $result = mysql_query("SELECT * FROM items WHERE items.id=$itemId") or die("ERROR: Query failed");
     if (mysql_num_rows($result) == 0)
@@ -62,7 +62,7 @@
     printHTMLheader("RUBiS: Viewing ".$row["name"]);
     printHTMLHighlighted($row["name"]);
     print("<TABLE>\n".
-          "<TR><TD>Currently<TD><b><BIG>$maxBid</BIG></b>\n");    
+          "<TR><TD>Currently<TD><b><BIG>$maxBid</BIG></b>\n");
 
     // Check if the reservePrice has been met (if any)
     $reservePrice = $row["reserve_price"];
@@ -106,7 +106,7 @@
     mysql_free_result($maxBidResult);
     mysql_free_result($result);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

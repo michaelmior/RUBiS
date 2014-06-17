@@ -5,7 +5,7 @@
     $scriptName = "PutCommentAuth.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $itemId = $_POST['itemId'];
     if ($itemId == null)
     {
@@ -15,7 +15,7 @@
          printError($scriptName, $startTime, "Authentification for comment", "You must provide an item identifier!<br>");
          exit();
       }
-    }      
+    }
 
     $to = $_POST['to'];
     if ($to == null)
@@ -26,7 +26,7 @@
          printError($scriptName, $startTime, "Authentification for comment", "You must provide a user identifier!<br>");
          exit();
       }
-    }      
+    }
 
     printHTMLheader("RUBiS: User authentification for comment");
     include("put_comment_auth_header.html");

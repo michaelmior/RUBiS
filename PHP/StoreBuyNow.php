@@ -5,7 +5,7 @@
     $scriptName = "StoreBuyNow.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
-    
+
     $userId = $_POST['userId'];
     if ($userId == null)
     {
@@ -16,7 +16,7 @@
          exit();
       }
     }
-      
+
     $itemId = $_POST['itemId'];
     if ($itemId == null)
     {
@@ -27,7 +27,7 @@
          exit();
       }
     }
-      
+
     $maxQty = $_POST['maxQty'];
     if ($maxQty == null)
     {
@@ -56,7 +56,7 @@
     {
       printError("<h3>You cannot request $qty items because only $maxQty are proposed !<br></h3>");
       return ;
-    }      
+    }
 
     getDatabaseLink($link);
 
@@ -83,10 +83,10 @@
       print("<center><h2>Your have successfully bought this item.</h2></center>\n");
     else
       print("<center><h2>Your have successfully bought these items.</h2></center>\n");
-    
+
     mysql_free_result($result);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>

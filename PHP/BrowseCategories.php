@@ -27,7 +27,7 @@
       if ($userId == -1)
       {
         printError($scriptName, $startTime, "Authentication", "You don't have an account on RUBiS!<br>You have to register first.<br>\n");
-        exit();	
+        exit();
       }
     }
 
@@ -50,7 +50,7 @@
     }
     mysql_free_result($result);
     mysql_close($link);
-    
+
     printHTMLfooter($scriptName, $startTime);
     ?>
   </body>
