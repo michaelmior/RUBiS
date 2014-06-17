@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "RegisterItem.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
     
     $userId = $_POST['userId'];

@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "SellItemForm.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
     
     $category = $_POST['category'];

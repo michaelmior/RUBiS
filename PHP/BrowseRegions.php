@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "BrowseRegions.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
 
     printHTMLheader("RUBiS available regions");

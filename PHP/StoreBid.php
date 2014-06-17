@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "StoreBid.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
     
     $userId = $_POST['userId'];

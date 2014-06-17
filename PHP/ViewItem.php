@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "ViewItem.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
     
     $itemId = $_POST['itemId'];

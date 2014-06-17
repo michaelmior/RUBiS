@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "BuyNow.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
     
     $nickname = $_POST['nickname'];

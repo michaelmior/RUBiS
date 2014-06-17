@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "SearchItemsByCategories.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
     
     $regionId = $_POST['region'];

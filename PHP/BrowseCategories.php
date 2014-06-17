@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "BrowseCategories.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
 
     $region = $_POST['region'];

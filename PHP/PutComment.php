@@ -3,7 +3,7 @@
   <body>
     <?php
     $scriptName = "PutComment.php";
-    include("PHPprinter.php");
+    require "PHPprinter.php";
     $startTime = getMicroTime();
     
     $to = $_POST['to'];
