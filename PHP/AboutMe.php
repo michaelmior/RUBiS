@@ -112,10 +112,7 @@
         "<TD><a href=\"/PHP/ViewUserInfo.php?userId=".$sellerId."\">".$sellerNickname.
         "<TD><a href=\"/PHP/PutBid.php?itemId=".$itemId."&nickname=".urlencode($nickname)."&password=".urlencode($password)."\"><IMG SRC=\"/PHP/bid_now.jpg\" height=22 width=90></a>\n");
 
-      mysql_free_result($sellerResult);
-      mysql_free_result($currentPriceResult);
     }
-    mysql_free_result($itemResult);
     print("</TBODY></TABLE><p>\n");
     }
 
@@ -159,8 +156,6 @@
                "<TD><a href=\"/PHP/ViewUserInfo.php?userId=".$sellerId."\">".$sellerNickname.
                "\n");
 
-         mysql_free_result($sellerResult);
-         mysql_free_result($currentPriceResult);
        }
 
        print("</TBODY></TABLE><p>\n");
@@ -204,7 +199,6 @@
                "<TD><a href=\"/PHP/ViewUserInfo.php?userId=".$sellerId."\">".$sellerNickname.
                "\n");
 
-      mysql_free_result($sellerResult);
        }
 
        print("</TBODY></TABLE><p>\n");
@@ -245,7 +239,6 @@
           "<TD>".$itemReservePrice."<TD>".$buyNow.
                   "<TD>".$startDate."<TD>".$endDate."\n");
 
-       mysql_free_result($currentPriceResult);
        }
        print("</TABLE><p>\n");
      }
@@ -286,7 +279,6 @@
           "<TD>".$itemReservePrice."<TD>".$buyNow.
                   "<TD>".$startDate."<TD>".$endDate."\n");
 
-       mysql_free_result($currentPriceResult);
        }
        print("</TABLE><p>\n");
 
@@ -317,18 +309,10 @@
         $comment = $commentsRow["comment"];
 
         print("<DT><b><BIG><a href=\"/PHP/ViewUserInfo.php?userId=".$authorId."\">$authorName</a></BIG></b>"." wrote the ".$date."<DD><i>".$comment."</i><p>\n");
-        mysql_free_result($authorResult);
     }
     print("</DL>\n");
 
     }
-    mysql_free_result($userResult);
-    mysql_free_result($commentsResult);
-    mysql_free_result($bidsResult);
-    mysql_free_result($currentSellsResult);
-    mysql_free_result($pastSellsResult);
-    mysql_free_result($wonItemsResult);
-    mysql_free_result($buyNowResult);
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);

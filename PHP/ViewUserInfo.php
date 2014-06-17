@@ -62,13 +62,10 @@
         $date = $commentsRow["date"];
         $comment = $commentsRow["comment"];
         print("<DT><b><BIG><a href=\"/PHP/ViewUserInfo.php?userId=".$authorId."\">$authorName</a></BIG></b>"." wrote the ".$date."<DD><i>".$comment."</i><p>\n");
-        mysql_free_result($authorResult);
     }
     print("</DL>\n");
 
     }
-    mysql_free_result($userResult);
-    mysql_free_result($commentsResult);
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);

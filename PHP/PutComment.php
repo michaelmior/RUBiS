@@ -99,7 +99,6 @@
           "<TEXTAREA rows=\"20\" cols=\"80\" name=\"comment\">Write your comment here</TEXTAREA><br><p>\n".
           "<input type=submit value=\"Post this comment now!\"></center><p>\n");
 
-    mysql_free_result($result);
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);

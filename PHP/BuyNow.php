@@ -60,7 +60,6 @@
     $sellerNameResult = mysql_query("SELECT nickname FROM users WHERE id=$userId", $link) or die("ERROR: Seller name query failed");
     $sellerNameRow = mysql_fetch_array($sellerNameResult);
     $sellerName = $sellerNameRow["nickname"];
-    mysql_free_result($sellerNameResult);
 
     printHTMLheader("RUBiS: Buy Now");
     printHTMLHighlighted("You are ready to buy this item: ".$row["name"]);
@@ -86,7 +85,6 @@
       print("<input type=hidden name=qty value=1>\n");
     print("</table><p><center><input type=submit value=\"Buy now!\"></center><p>\n");
 
-    mysql_free_result($result);
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);

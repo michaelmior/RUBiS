@@ -55,7 +55,6 @@
       $userNameResult = mysql_query("SELECT nickname FROM users WHERE id=$userId", $link) or die("ERROR: User nickname query failed");
       $userNameRow = mysql_fetch_array($userNameResult);
       $nickname = $userNameRow["nickname"];
-      mysql_free_result($userNameResult);
         }
         else
       {
@@ -69,8 +68,6 @@
     print("</TABLE>\n");
 
 
-    mysql_free_result($bidsListResult);
-    mysql_free_result($itemNameResult);
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);

@@ -56,7 +56,6 @@
       $nbOfBidsResult = mysql_query("SELECT COUNT(*) AS bid FROM bids WHERE item_id=".$row["id"], $link) or die("ERROR: Nb of bids query failed");
       $nbOfBidsRow = mysql_fetch_array($nbOfBidsResult);
       $nbOfBids = $nbOfBidsRow["bid"];
-      mysql_free_result($nbOfBidsResult);
     }
 
     printHTMLheader("RUBiS: Viewing ".$row["name"]);
@@ -81,7 +80,6 @@
     $sellerNameResult = mysql_query("SELECT users.nickname FROM users WHERE id=".$row["seller"], $link) or die("ERROR: Seller name query failed");
     $sellerNameRow = mysql_fetch_array($sellerNameResult);
     $sellerName = $sellerNameRow["nickname"];
-    mysql_free_result($sellerNameResult);
 
     print("<TR><TD>Quantity<TD><b><BIG>".$row["quantity"]."</BIG></b>\n");
     print("<TR><TD>First bid<TD><b><BIG>$firstBid</BIG></b>\n");
@@ -103,8 +101,6 @@
     print($row["description"]);
     print("<br><p>\n");
 
-    mysql_free_result($maxBidResult);
-    mysql_free_result($result);
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);

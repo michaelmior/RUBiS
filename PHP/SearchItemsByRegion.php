@@ -59,7 +59,6 @@
         print("<p><CENTER>\n<a href=\"/PHP/SearchItemsByRegion.php?category=$categoryId&region=$regionId".
               "&categoryName=".urlencode($categoryName)."&page=".($page-1)."&nbOfItems=$nbOfItems\">Previous page</a>\n</CENTER>\n");
       }
-      mysql_free_result($result);
       $link->close();
       printHTMLfooter($scriptName, $startTime);
       exit();
@@ -92,7 +91,6 @@
             "<a href=\"/PHP/SearchItemsByRegion.php?category=$categoryId&region=$regionId".
             "&categoryName=".urlencode($categoryName)."&page=".($page+1)."&nbOfItems=$nbOfItems\">Next page</a>\n\n</CENTER>\n");
 
-    mysql_free_result($result);
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);
