@@ -76,7 +76,7 @@
     {
       $maxBid = $row["max_bid"];
       if ($maxBid == 0)
-	$maxBid = $row["initial_price"];
+    $maxBid = $row["initial_price"];
 
       print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$row["id"]."\">".$row["name"].
             "<TD>$maxBid".

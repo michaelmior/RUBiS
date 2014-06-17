@@ -73,50 +73,50 @@
                 "<TBODY>\n");
       while ($bidsRow = mysql_fetch_array($bidsResult))
       {
-	$maxBid = $bidsRow["max_bid"];
-	$itemId = $bidsRow["item_id"];
-	$itemResult = mysql_query("SELECT * FROM items WHERE id=$itemId", $link) or die("ERROR: Query failed for item the user has put a bid on.");
-	if (mysql_num_rows($itemResult) == 0)
+    $maxBid = $bidsRow["max_bid"];
+    $itemId = $bidsRow["item_id"];
+    $itemResult = mysql_query("SELECT * FROM items WHERE id=$itemId", $link) or die("ERROR: Query failed for item the user has put a bid on.");
+    if (mysql_num_rows($itemResult) == 0)
         {
-	  die("<h3>ERROR: This item does not exist.</h3><br>\n");
+      die("<h3>ERROR: This item does not exist.</h3><br>\n");
         }
 
-//	  $currentPriceResult = mysql_query("SELECT MAX(bid) AS bid FROM bids WHERE item_id=$itemId", $link) or die("ERROR: Query failed for getting the item current price.");
-//	  if (mysql_num_rows($currentPriceResult) == 0)
-//	    die ("ERROR: Cannot get the current price (sold item).");
-//	  $currentPriceRow = mysql_fetch_array($currentPriceResult);
-	  $itemRow = mysql_fetch_array($itemResult);
-	  $currentPrice = $itemRow["max_bid"];
-	  if ($currentPrice == null)
-	    $currentPrice = "none";
+//      $currentPriceResult = mysql_query("SELECT MAX(bid) AS bid FROM bids WHERE item_id=$itemId", $link) or die("ERROR: Query failed for getting the item current price.");
+//      if (mysql_num_rows($currentPriceResult) == 0)
+//        die ("ERROR: Cannot get the current price (sold item).");
+//      $currentPriceRow = mysql_fetch_array($currentPriceResult);
+      $itemRow = mysql_fetch_array($itemResult);
+      $currentPrice = $itemRow["max_bid"];
+      if ($currentPrice == null)
+        $currentPrice = "none";
 
-	  $itemName = $itemRow["name"];
-	  $itemInitialPrice = $itemRow["initial_price"];
-	  $quantity = $itemRow["quantity"];
-	  $itemReservePrice = $itemRow["reserve_price"];
-	  $startDate = $itemRow["start_date"];
-	  $endDate = $itemRow["end_date"];
-	  $sellerId = $itemRow["seller"];
+      $itemName = $itemRow["name"];
+      $itemInitialPrice = $itemRow["initial_price"];
+      $quantity = $itemRow["quantity"];
+      $itemReservePrice = $itemRow["reserve_price"];
+      $startDate = $itemRow["start_date"];
+      $endDate = $itemRow["end_date"];
+      $sellerId = $itemRow["seller"];
 
-	  $sellerResult = mysql_query("SELECT nickname FROM users WHERE id=$sellerId", $link) or die("ERROR: Query failed for getting the seller nickname.");
-	  if (mysql_num_rows($sellerResult) == 0)
+      $sellerResult = mysql_query("SELECT nickname FROM users WHERE id=$sellerId", $link) or die("ERROR: Query failed for getting the seller nickname.");
+      if (mysql_num_rows($sellerResult) == 0)
           {
-	    die("<h3>ERROR: This seller does not exist.</h3><br>\n");
+        die("<h3>ERROR: This seller does not exist.</h3><br>\n");
           }
-	  $sellerRow = mysql_fetch_array($sellerResult);
-	  $sellerNickname = $sellerRow["nickname"];
+      $sellerRow = mysql_fetch_array($sellerResult);
+      $sellerNickname = $sellerRow["nickname"];
 
-	  print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$itemId."\">".$itemName.
-		"<TD>".$itemInitialPrice."<TD>".$currentPrice."<TD>".$maxBid."<TD>".$quantity.
-		"<TD>".$startDate."<TD>".$endDate.
-		"<TD><a href=\"/PHP/ViewUserInfo.php?userId=".$sellerId."\">".$sellerNickname.
-		"<TD><a href=\"/PHP/PutBid.php?itemId=".$itemId."&nickname=".urlencode($nickname)."&password=".urlencode($password)."\"><IMG SRC=\"/PHP/bid_now.jpg\" height=22 width=90></a>\n");
+      print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$itemId."\">".$itemName.
+        "<TD>".$itemInitialPrice."<TD>".$currentPrice."<TD>".$maxBid."<TD>".$quantity.
+        "<TD>".$startDate."<TD>".$endDate.
+        "<TD><a href=\"/PHP/ViewUserInfo.php?userId=".$sellerId."\">".$sellerNickname.
+        "<TD><a href=\"/PHP/PutBid.php?itemId=".$itemId."&nickname=".urlencode($nickname)."&password=".urlencode($password)."\"><IMG SRC=\"/PHP/bid_now.jpg\" height=22 width=90></a>\n");
 
-	  mysql_free_result($sellerResult);
-	  mysql_free_result($currentPriceResult);
-	}
-	mysql_free_result($itemResult);
-	print("</TBODY></TABLE><p>\n");
+      mysql_free_result($sellerResult);
+      mysql_free_result($currentPriceResult);
+    }
+    mysql_free_result($itemResult);
+    print("</TBODY></TABLE><p>\n");
     }
 
      // Get the items the user won in the past 30 days
@@ -204,7 +204,7 @@
                "<TD><a href=\"/PHP/ViewUserInfo.php?userId=".$sellerId."\">".$sellerNickname.
                "\n");
 
-	  mysql_free_result($sellerResult);
+      mysql_free_result($sellerResult);
        }
 
        print("</TBODY></TABLE><p>\n");
@@ -224,28 +224,28 @@
                 "<TBODY>\n");
        while ($currentSellsRow = mysql_fetch_array($currentSellsResult))
        {
-	   $itemName = $currentSellsRow["name"];
-	   $itemInitialPrice = $currentSellsRow["initial_price"];
-	   $quantity = $currentSellsRow["quantity"];
-	   $itemReservePrice = $currentSellsRow["reserve_price"];
-	   $buyNow = $currentSellsRow["buy_now"];
-	   $endDate = $currentSellsRow["end_date"];
-	   $startDate = $currentSellsRow["start_date"];
-	   $itemId = $currentSellsRow["id"];
-//	   $currentPriceResult = mysql_query("SELECT MAX(bid) AS bid FROM bids WHERE item_id=$itemId", $link) or die("ERROR: Query failed for getting the item current price (sold item).");
-//	   if (mysql_num_rows($currentPriceResult) == 0)
-//	       die ("ERROR: Cannot get the current price (sold item).");
-//	   $currentPriceRow = mysql_fetch_array($currentPriceResult);
-	   $currentPrice = $currentSellsResult["max_bid"];
-	   if ($currentPrice == null)
-	   	$currentPrice = "none";
+       $itemName = $currentSellsRow["name"];
+       $itemInitialPrice = $currentSellsRow["initial_price"];
+       $quantity = $currentSellsRow["quantity"];
+       $itemReservePrice = $currentSellsRow["reserve_price"];
+       $buyNow = $currentSellsRow["buy_now"];
+       $endDate = $currentSellsRow["end_date"];
+       $startDate = $currentSellsRow["start_date"];
+       $itemId = $currentSellsRow["id"];
+//       $currentPriceResult = mysql_query("SELECT MAX(bid) AS bid FROM bids WHERE item_id=$itemId", $link) or die("ERROR: Query failed for getting the item current price (sold item).");
+//       if (mysql_num_rows($currentPriceResult) == 0)
+//           die ("ERROR: Cannot get the current price (sold item).");
+//       $currentPriceRow = mysql_fetch_array($currentPriceResult);
+       $currentPrice = $currentSellsResult["max_bid"];
+       if ($currentPrice == null)
+           $currentPrice = "none";
 
-	   print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$itemId."\">".$itemName.
+       print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$itemId."\">".$itemName.
                   "<TD>".$itemInitialPrice."<TD>".$currentPrice."<TD>".$quantity.
-		  "<TD>".$itemReservePrice."<TD>".$buyNow.
+          "<TD>".$itemReservePrice."<TD>".$buyNow.
                   "<TD>".$startDate."<TD>".$endDate."\n");
 
-	   mysql_free_result($currentPriceResult);
+       mysql_free_result($currentPriceResult);
        }
        print("</TABLE><p>\n");
      }
@@ -264,29 +264,29 @@
                 "<TBODY>\n");
        while ($pastSellsRow = mysql_fetch_array($pastSellsResult))
        {
-	   $itemName = $pastSellsRow["name"];
-	   $itemInitialPrice = $pastSellsRow["initial_price"];
-	   $quantity = $pastSellsRow["quantity"];
-	   $itemReservePrice = $pastSellsRow["reserve_price"];
-	   $buyNow = $pastSellsRow["buy_now"];
-	   $endDate = $pastSellsRow["end_date"];
-	   $startDate = $pastSellsRow["start_date"];
-	   $itemId = $pastSellsRow["id"];
-// 	   $currentPriceResult = mysql_query("SELECT MAX(bid) AS bid FROM bids WHERE item_id=$itemId", $link) or die("ERROR: Query failed for getting the item current price (sold item).");
-// 	   if (mysql_num_rows($currentPriceResult) == 0)
-// 	       die ("ERROR: Cannot get the current price (sold item).");
+       $itemName = $pastSellsRow["name"];
+       $itemInitialPrice = $pastSellsRow["initial_price"];
+       $quantity = $pastSellsRow["quantity"];
+       $itemReservePrice = $pastSellsRow["reserve_price"];
+       $buyNow = $pastSellsRow["buy_now"];
+       $endDate = $pastSellsRow["end_date"];
+       $startDate = $pastSellsRow["start_date"];
+       $itemId = $pastSellsRow["id"];
+//        $currentPriceResult = mysql_query("SELECT MAX(bid) AS bid FROM bids WHERE item_id=$itemId", $link) or die("ERROR: Query failed for getting the item current price (sold item).");
+//        if (mysql_num_rows($currentPriceResult) == 0)
+//            die ("ERROR: Cannot get the current price (sold item).");
 
-// 	   $currentPriceRow = mysql_fetch_array($currentPriceResult);
-	   $currentPrice = $pastSellsResult["max_bid"];
-	   if ($currentPrice == null)
-	   	$currentPrice = "none";
+//        $currentPriceRow = mysql_fetch_array($currentPriceResult);
+       $currentPrice = $pastSellsResult["max_bid"];
+       if ($currentPrice == null)
+           $currentPrice = "none";
 
-	   print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$itemId."\">".$itemName.
+       print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$itemId."\">".$itemName.
                   "<TD>".$itemInitialPrice."<TD>".$currentPrice."<TD>".$quantity.
-		  "<TD>".$itemReservePrice."<TD>".$buyNow.
+          "<TD>".$itemReservePrice."<TD>".$buyNow.
                   "<TD>".$startDate."<TD>".$endDate."\n");
 
-	   mysql_free_result($currentPriceResult);
+       mysql_free_result($currentPriceResult);
        }
        print("</TABLE><p>\n");
 
@@ -298,28 +298,28 @@
       printHTMLHighlighted("<h2>There is no comment for this user.</h2>\n");
     else
     {
-	print("<p><DL>\n");
-	printHTMLHighlighted("<h3>Comments about you.</h3>\n");
-	while ($commentsRow = mysql_fetch_array($commentsResult))
-	{
-	    $authorId = $commentsRow["from_user_id"];
-	    $authorResult = mysql_query("SELECT nickname FROM users WHERE users.id=$authorId", $link) or die("ERROR: Query failed for the comment author.");
-	    if (mysql_num_rows($authorResult) == 0)
+    print("<p><DL>\n");
+    printHTMLHighlighted("<h3>Comments about you.</h3>\n");
+    while ($commentsRow = mysql_fetch_array($commentsResult))
+    {
+        $authorId = $commentsRow["from_user_id"];
+        $authorResult = mysql_query("SELECT nickname FROM users WHERE users.id=$authorId", $link) or die("ERROR: Query failed for the comment author.");
+        if (mysql_num_rows($authorResult) == 0)
             {
               die("ERROR: This author does not exist.<br>\n");
             }
-	    else
-	    {
-		$authorRow = mysql_fetch_array($authorResult);
-		$authorName = $authorRow["nickname"];
-	    }
-	    $date = $commentsRow["date"];
-	    $comment = $commentsRow["comment"];
+        else
+        {
+        $authorRow = mysql_fetch_array($authorResult);
+        $authorName = $authorRow["nickname"];
+        }
+        $date = $commentsRow["date"];
+        $comment = $commentsRow["comment"];
 
-	    print("<DT><b><BIG><a href=\"/PHP/ViewUserInfo.php?userId=".$authorId."\">$authorName</a></BIG></b>"." wrote the ".$date."<DD><i>".$comment."</i><p>\n");
-	    mysql_free_result($authorResult);
-	}
-	print("</DL>\n");
+        print("<DT><b><BIG><a href=\"/PHP/ViewUserInfo.php?userId=".$authorId."\">$authorName</a></BIG></b>"." wrote the ".$date."<DD><i>".$comment."</i><p>\n");
+        mysql_free_result($authorResult);
+    }
+    print("</DL>\n");
 
     }
     mysql_free_result($userResult);

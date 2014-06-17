@@ -68,14 +68,14 @@
     $reservePrice = $row["reserve_price"];
     if ($reservePrice > 0)
     {
-	if ($maxBid >= $reservePrice)
-	{
-	  print("(The reserve price has been met)\n");
-	}
-	else
-	{
+    if ($maxBid >= $reservePrice)
+    {
+      print("(The reserve price has been met)\n");
+    }
+    else
+    {
           print("(The reserve price has NOT been met)\n");
-	}
+    }
     }
 
     $sellerNameResult = mysql_query("SELECT users.nickname FROM users WHERE id=".$row["seller"], $link) or die("ERROR: Seller name query failed");
@@ -93,7 +93,7 @@
 
     // Can the user by this item now ?
     if ($buyNow > 0)
-	print("<p><a href=\"/PHP/BuyNowAuth.php?itemId=".$row["id"]."\">".
+    print("<p><a href=\"/PHP/BuyNowAuth.php?itemId=".$row["id"]."\">".
               "<IMG SRC=\"/PHP/buy_it_now.jpg\" height=22 width=150></a>".
               "  <BIG><b>You can buy this item right now for only \$$buyNow</b></BIG><br><p>\n");
 

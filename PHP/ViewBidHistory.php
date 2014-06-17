@@ -46,25 +46,25 @@
 
     while ($bidsListRow = mysql_fetch_array($bidsListResult))
     {
-    	$bidAmount = $bidsListRow["bid"];
-    	$bidDate = $bidsListRow["date"];
-    	$userId = $bidsListRow["user_id"];
-	// Get the bidder nickname
-    	if ($userId != 0)
-	{
-	  $userNameResult = mysql_query("SELECT nickname FROM users WHERE id=$userId", $link) or die("ERROR: User nickname query failed");
-	  $userNameRow = mysql_fetch_array($userNameResult);
-	  $nickname = $userNameRow["nickname"];
-	  mysql_free_result($userNameResult);
-    	}
-    	else
-	  {
-	    print("Cannot lookup the user!<br>");
-	    printHTMLfooter($scriptName, $startTime);
-	    exit();
-	  }
+        $bidAmount = $bidsListRow["bid"];
+        $bidDate = $bidsListRow["date"];
+        $userId = $bidsListRow["user_id"];
+    // Get the bidder nickname
+        if ($userId != 0)
+    {
+      $userNameResult = mysql_query("SELECT nickname FROM users WHERE id=$userId", $link) or die("ERROR: User nickname query failed");
+      $userNameRow = mysql_fetch_array($userNameResult);
+      $nickname = $userNameRow["nickname"];
+      mysql_free_result($userNameResult);
+        }
+        else
+      {
+        print("Cannot lookup the user!<br>");
+        printHTMLfooter($scriptName, $startTime);
+        exit();
+      }
         print("<TR><TD><a href=\"/PHP/ViewUserInfo.php?userId=".$userId."\">$nickname</a>"
-		  ."<TD>".$bidAmount."<TD>".$bidDate."\n");
+          ."<TD>".$bidAmount."<TD>".$bidDate."\n");
     }
     print("</TABLE>\n");
 

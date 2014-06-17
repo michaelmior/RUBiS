@@ -47,24 +47,24 @@
       print("<h2>There is no comment for this user.</h2><br>\n");
     else
     {
-	print("<DL>\n");
-	while ($commentsRow = mysql_fetch_array($commentsResult))
-	{
-	    $authorId = $commentsRow["from_user_id"];
-	    $authorResult = mysql_query("SELECT nickname FROM users WHERE users.id=$authorId", $link) or die("ERROR: Query failed for the comment author.");
-	    if (mysql_num_rows($authorResult) == 0)
-		die("ERROR: This author does not exist.<br>\n");
-	    else
-	    {
-		$authorRow = mysql_fetch_array($authorResult);
-		$authorName = $authorRow["nickname"];
-	    }
-	    $date = $commentsRow["date"];
-	    $comment = $commentsRow["comment"];
-	    print("<DT><b><BIG><a href=\"/PHP/ViewUserInfo.php?userId=".$authorId."\">$authorName</a></BIG></b>"." wrote the ".$date."<DD><i>".$comment."</i><p>\n");
-	    mysql_free_result($authorResult);
-	}
-	print("</DL>\n");
+    print("<DL>\n");
+    while ($commentsRow = mysql_fetch_array($commentsResult))
+    {
+        $authorId = $commentsRow["from_user_id"];
+        $authorResult = mysql_query("SELECT nickname FROM users WHERE users.id=$authorId", $link) or die("ERROR: Query failed for the comment author.");
+        if (mysql_num_rows($authorResult) == 0)
+        die("ERROR: This author does not exist.<br>\n");
+        else
+        {
+        $authorRow = mysql_fetch_array($authorResult);
+        $authorName = $authorRow["nickname"];
+        }
+        $date = $commentsRow["date"];
+        $comment = $commentsRow["comment"];
+        print("<DT><b><BIG><a href=\"/PHP/ViewUserInfo.php?userId=".$authorId."\">$authorName</a></BIG></b>"." wrote the ".$date."<DD><i>".$comment."</i><p>\n");
+        mysql_free_result($authorResult);
+    }
+    print("</DL>\n");
 
     }
     mysql_free_result($userResult);
