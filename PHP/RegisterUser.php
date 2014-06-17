@@ -74,21 +74,18 @@
 
     getDatabaseLink($link);
 
-    begin($link);
     // Check if the region really exists
     $regionResult = mysql_query("SELECT * FROM regions WHERE name=\"$region\"", $link) or die("ERROR: Region query failed");
     if (mysql_num_rows($regionResult) == 0)
     {
       printError($scriptName, $startTime, "Register user", "Region $region does not exist in the database!<br>\n");
       mysql_free_result($regionResult);
-      commit($link);
       exit();
     }
     else
     {
       $regionRow = mysql_fetch_array($regionResult);
       $regionId = $regionRow["id"];
-      commit($link);
       mysql_free_result($regionResult);
     }
 
@@ -108,7 +105,6 @@
 
     $result = mysql_query("SELECT * FROM users WHERE nickname=\"$nickname\"", $link) or die("ERROR: Query user failed");
     $row = mysql_fetch_array($result);
-    commit($link);
 
     printHTMLheader("RUBiS: Welcome to $nickname");
     print("<h2>Your registration has been processed successfully</h2><br>\n");

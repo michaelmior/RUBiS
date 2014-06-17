@@ -33,9 +33,7 @@
 
     printHTMLheader("RUBiS available categories");
 
-    begin($link);
     $result = mysql_query("SELECT * FROM categories", $link) or die("ERROR: Query failed");
-    commit($link);
     if (mysql_num_rows($result) == 0)
       print("<h2>Sorry, but there is no category available at this time. Database table is empty</h2><br>\n");
     else

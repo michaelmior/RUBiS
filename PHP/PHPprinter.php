@@ -50,20 +50,3 @@ function authenticate($nickname, $password, $link)
   $row = mysql_fetch_array($result);
   return $row["id"];
 }
-
-function begin($link)
-{
-  mysql_query("BEGIN", $link);
-}
-
-function commit($link)
-{
-  mysql_query("COMMIT", $link);
-}
-
-function rollback($link)
-{
-  mysql_query("ROLLBACK", $link);
-}
-
-?>

@@ -48,7 +48,6 @@
     print("<h2>Items in category $categoryName</h2><br><br>");
     
     getDatabaseLink($link);
-    begin($link);
     $result = mysql_query("SELECT items.id,items.name,items.initial_price,items.max_bid,items.nb_of_bids,items.end_date FROM items WHERE category=$categoryId AND end_date>=NOW() LIMIT ".$page*$nbOfItems.",$nbOfItems", $link) or die("ERROR: Query failed");
     if (mysql_num_rows($result) == 0)
     {
@@ -61,7 +60,6 @@
               "&categoryName=".urlencode($categoryName)."&page=".($page-1)."&nbOfItems=$nbOfItems\">Previous page</a>\n</CENTER>\n");
       }
       mysql_free_result($result);
-      commit($link);
       mysql_close($link);
       printHTMLfooter($scriptName, $startTime);   
       exit();
@@ -97,7 +95,6 @@
             "<a href=\"/PHP/SearchItemsByCategory.php?category=$categoryId".
             "&categoryName=".urlencode($categoryName)."&page=".($page+1)."&nbOfItems=$nbOfItems\">Next page</a>\n\n</CENTER>\n");
 
-    commit($link);
     mysql_free_result($result);
     mysql_close($link);
     

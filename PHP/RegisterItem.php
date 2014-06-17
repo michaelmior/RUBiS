@@ -104,12 +104,10 @@
 
     getDatabaseLink($link);
 
-    begin($link);
     // Add item to database
     $start = date("Y:m:d H:i:s");
     $end = date("Y:m:d H:i:s", mktime(date("H"), date("i"),date("s"), date("m"), date("d")+$duration, date("Y")));
     $result = mysql_query("INSERT INTO items VALUES (NULL, \"$name\", \"$description\", $initialPrice, $qty, $reservePrice, $buyNow, 0, 0, '$start', '$end', $userId, $categoryId)", $link) or die("ERROR: Failed to insert new item in database. MySQL reports '".mysql_error()."' while querying 'INSERT INTO items VALUES (NULL, \"$name\", \"$description\", $initialPrice, $quantity, $reservePrice, $buyNow, '$start', '$end', $userId, $categoryId)'");
-    commit($link);
 
     printHTMLheader("RUBiS: Selling $name");
     print("<center><h2>Your Item has been successfully registered.</h2></center><br>\n");

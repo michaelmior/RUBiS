@@ -29,19 +29,16 @@
       
     getDatabaseLink($link);
 
-    begin($link);
     // Authenticate the user 
     $userId = authenticate($nickname, $password, $link);
     if ( userId == -1)
     {
-      rollback($link);
       die("<h2>ERROR: You don't have an account on RUBis! You have to register first.</h2><br>");
     }
 
     $userResult = mysql_query("SELECT * FROM users WHERE users.id=$userId", $link) or die("ERROR: Query failed");
     if (mysql_num_rows($userResult) == 0)
     {
-      rollback();
       die("<h3>ERROR: Sorry, but this user does not exist.</h3><br>\n");
     }
 
@@ -81,7 +78,6 @@
 	$itemResult = mysql_query("SELECT * FROM items WHERE id=$itemId", $link) or die("ERROR: Query failed for item the user has put a bid on.");
 	if (mysql_num_rows($itemResult) == 0)
         {
-          rollback();
 	  die("<h3>ERROR: This item does not exist.</h3><br>\n");
         }
 	  
@@ -105,7 +101,6 @@
 	  $sellerResult = mysql_query("SELECT nickname FROM users WHERE id=$sellerId", $link) or die("ERROR: Query failed for getting the seller nickname.");
 	  if (mysql_num_rows($sellerResult) == 0)
           {
-            rollback($link);
 	    die("<h3>ERROR: This seller does not exist.</h3><br>\n");
           }
 	  $sellerRow = mysql_fetch_array($sellerResult);
@@ -141,7 +136,6 @@
          $itemResult = mysql_query("SELECT * FROM old_items WHERE id=$itemId", $link) or die("ERROR: Query failed for getting the items the user won.");
          if (mysql_num_rows($itemResult) == 0)
           {
-            rollback($link);
            die("<h3>This item does not exist.</h3><br>\n");
           }
          
@@ -155,7 +149,6 @@
          $sellerResult = mysql_query("SELECT nickname FROM users WHERE id=$sellerId", $link) or die("ERROR: Query failed for getting the seller nickname.");
          if (mysql_num_rows($sellerResult) == 0)
           {
-            rollback($link);
            die("<h3>ERROR: This seller does not exist.</h3><br>\n");
           }
          $sellerRow = mysql_fetch_array($sellerResult);
@@ -190,7 +183,6 @@
          $itemResult = mysql_query("SELECT * FROM old_items WHERE id=$itemId", $link) or die("ERROR: Query failed for getting the item the user bought.");
          if (mysql_num_rows($itemResult) == 0)
           {
-            rollback($link);
            die("<h3>ERROR: This item does not exist.</h3><br>\n");
           }
                   
@@ -202,7 +194,6 @@
          $sellerResult = mysql_query("SELECT nickname FROM users WHERE id=$sellerId", $link) or die("ERROR: Query failed for getting the seller nickname.");
          if (mysql_num_rows($sellerResult) == 0)
           {
-            rollback($link);
            die("<h3>ERROR: This seller does not exist.</h3><br>\n");
           }
          $sellerRow = mysql_fetch_array($sellerResult);
@@ -315,7 +306,6 @@
 	    $authorResult = mysql_query("SELECT nickname FROM users WHERE users.id=$authorId", $link) or die("ERROR: Query failed for the comment author.");
 	    if (mysql_num_rows($authorResult) == 0)
             {
-              rollback($link);
               die("ERROR: This author does not exist.<br>\n");
             }
 	    else
@@ -332,7 +322,6 @@
 	print("</DL>\n");
 
     }
-    commit($link);
     mysql_free_result($userResult);
     mysql_free_result($commentsResult);
     mysql_free_result($bidsResult);

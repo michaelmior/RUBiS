@@ -59,14 +59,12 @@
     }      
 
     getDatabaseLink($link);
-    begin($link);
 
     mysql_query("LOCK TABLES buy_now WRITE, items WRITE", $link) or die("ERROR: Failed to acquire locks on items and buy_now tables.");
     $result = mysql_query("SELECT * FROM items WHERE items.id=$itemId") or die("ERROR: Query failed");
     if (mysql_num_rows($result) == 0)
     {
       printError($scriptName, $startTime, "BuyNow", "<h3>Sorry, but this item does not exist.</h3><br>");
-      commit($link);
       exit();
     }
     $row = mysql_fetch_array($result);
@@ -86,7 +84,6 @@
     else
       print("<center><h2>Your have successfully bought these items.</h2></center>\n");
     
-    commit($link);
     mysql_free_result($result);
     mysql_close($link);
     

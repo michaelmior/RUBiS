@@ -18,7 +18,6 @@
     }
       
     getDatabaseLink($link);
-    begin($link);
 
     // Get the item name
     $itemNameResult = mysql_query("SELECT name FROM items WHERE items.id=$itemId", $link) or die("ERROR: Query failed");
@@ -26,7 +25,6 @@
       $itemNameResult = mysql_query("SELECT name FROM old_items WHERE old_items.id=$itemId", $link) or die("ERROR: Query failed");
     if (mysql_num_rows($itemNameResult) == 0)
     {
-      commit($link);
       die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
     }
     $itemNameRow = mysql_fetch_array($itemNameResult);
@@ -70,7 +68,6 @@
     }
     print("</TABLE>\n");
 
-    commit($link);
 
     mysql_free_result($bidsListResult);
     mysql_free_result($itemNameResult);

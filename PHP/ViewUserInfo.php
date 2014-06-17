@@ -18,11 +18,9 @@
     }
       
     getDatabaseLink($link);
-    begin($link);
     $userResult = mysql_query("SELECT * FROM users WHERE users.id=$userId", $link) or die("ERROR: Query failed");
     if (mysql_num_rows($userResult) == 0)
     {
-      commit($link);
       die("<h3>ERROR: Sorry, but this user does not exist.</h3><br>\n");
     }
 
@@ -69,7 +67,6 @@
 	print("</DL>\n");
 
     }
-    commit($link);
     mysql_free_result($userResult);
     mysql_free_result($commentsResult);
     mysql_close($link);

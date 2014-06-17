@@ -41,13 +41,11 @@
 
     getDatabaseLink($link);
 
-    commit($link);
     // Authenticate the user
     $userId = authenticate($nickname, $password, $link);
     if ($userId == -1)
     {
       printError($scriptName, $startTime, "Authentication", "You don't have an account on RUBiS!<br>You have to register first.<br>\n");
-      commit($link);
       exit();	
     }
 
@@ -55,7 +53,6 @@
     if (mysql_num_rows($result) == 0)
     {
       printError($scriptName, $startTime, "PutBid", "<h3>Sorry, but this item does not exist.</h3><br>");
-      commit($link);
       exit();
     }
 
@@ -152,7 +149,6 @@
       print("<input type=hidden name=qty value=1>\n");
     print("</table><p><input type=submit value=\"Bid now!\"></center><p>\n");
 
-    commit($link);
     mysql_free_result($maxBidResult);
     mysql_free_result($result);
     mysql_close($link);

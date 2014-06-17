@@ -62,7 +62,6 @@
     }
 
     getDatabaseLink($link);
-    begin($link);
 
     mysql_query("LOCK TABLES users WRITE, comments WRITE", $link) or die("ERROR: Failed to acquire locks on users and comments tables.");
     // Update user rating
@@ -80,7 +79,6 @@
     $now = date("Y:m:d H:i:s");
     $result = mysql_query("INSERT INTO comments VALUES (NULL, $from, $to, $itemId, $rating, '$now', \"$comment\")", $link) or die("ERROR: Failed to insert new comment in database.");
     mysql_query("UNLOCK TABLES", $link) or die("ERROR: Failed to unlock users and comments tables.");
-    commit($link);
 
     printHTMLheader("RUBiS: Comment posting");
     print("<center><h2>Your comment has been successfully posted.</h2></center>\n");

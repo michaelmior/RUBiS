@@ -52,13 +52,11 @@
 
     getDatabaseLink($link);
 
-    begin($link);
     // Authenticate the user
     $userId = authenticate($nickname, $password, $link);
     if ($userId == -1)
     {
       printError($scriptName, $startTime, "PutComment", "You don't have an account on RUBiS!<br>You have to register first.<br>\n");
-      commit($link);
       exit();	
     }
 
@@ -66,7 +64,6 @@
     if (mysql_num_rows($result) == 0)
     {
       printError($scriptName, $startTime, "PutComment", "<h3>Sorry, but this item does not exist.</h3><br>");
-      commit($link);
       exit();
     }
 
@@ -74,7 +71,6 @@
     if (mysql_num_rows($toRes) == 0)
     {
       printError($scriptName, $startTime, "PutComment", "<h3>Sorry, but this user does not exist.</h3><br>");
-      commit($link);
       exit();
     }
 
@@ -104,7 +100,6 @@
           "<input type=submit value=\"Post this comment now!\"></center><p>\n");
 
     mysql_free_result($result);
-    commit($link);
     mysql_close($link);
     
     printHTMLfooter($scriptName, $startTime);

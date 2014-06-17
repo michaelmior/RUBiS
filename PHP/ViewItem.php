@@ -18,13 +18,11 @@
     }
       
     getDatabaseLink($link);
-    begin($link);
     $result = mysql_query("SELECT * FROM items WHERE items.id=$itemId") or die("ERROR: Query failed");
     if (mysql_num_rows($result) == 0)
       $result = mysql_query("SELECT * FROM old_items WHERE old_items.id=$itemId") or die("ERROR: Query failed");
     if (mysql_num_rows($result) == 0)
     {
-      commit($link);
       die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
     }
 
@@ -105,7 +103,6 @@
     print($row["description"]);
     print("<br><p>\n");
 
-    commit($link);
     mysql_free_result($maxBidResult);
     mysql_free_result($result);
     mysql_close($link);

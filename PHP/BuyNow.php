@@ -41,7 +41,6 @@
 
     getDatabaseLink($link);
 
-    begin($link);
     // Authenticate the user
     $userId = authenticate($nickname, $password, $link);
     if ($userId == -1)
@@ -54,7 +53,6 @@
     if (mysql_num_rows($result) == 0)
     {
       printError($scriptName, $startTime, "BuyNow", "<h3>ERROR: Sorry, but this item does not exist.</h3><br>");
-      commit($link);
       exit();
     }
     $row = mysql_fetch_array($result);
@@ -63,7 +61,6 @@
     $sellerNameRow = mysql_fetch_array($sellerNameResult);
     $sellerName = $sellerNameRow["nickname"];
     mysql_free_result($sellerNameResult);
-    commit($link);
 
     printHTMLheader("RUBiS: Buy Now");
     printHTMLHighlighted("You are ready to buy this item: ".$row["name"]);
