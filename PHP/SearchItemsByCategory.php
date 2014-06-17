@@ -60,7 +60,7 @@
               "&categoryName=".urlencode($categoryName)."&page=".($page-1)."&nbOfItems=$nbOfItems\">Previous page</a>\n</CENTER>\n");
       }
       mysql_free_result($result);
-      mysql_close($link);
+      $link->close();
       printHTMLfooter($scriptName, $startTime);
       exit();
     }
@@ -96,7 +96,7 @@
             "&categoryName=".urlencode($categoryName)."&page=".($page+1)."&nbOfItems=$nbOfItems\">Next page</a>\n\n</CENTER>\n");
 
     mysql_free_result($result);
-    mysql_close($link);
+    $link->close();
 
     printHTMLfooter($scriptName, $startTime);
     ?>

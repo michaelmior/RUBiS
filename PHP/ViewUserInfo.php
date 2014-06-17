@@ -69,7 +69,7 @@
     }
     mysql_free_result($userResult);
     mysql_free_result($commentsResult);
-    mysql_close($link);
+    $link->close();
 
     printHTMLfooter($scriptName, $startTime);
     ?>

@@ -71,7 +71,7 @@
 
     mysql_free_result($bidsListResult);
     mysql_free_result($itemNameResult);
-    mysql_close($link);
+    $link->close();
 
     printHTMLfooter($scriptName, $startTime);
     ?>

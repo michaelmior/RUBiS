@@ -49,7 +49,7 @@
         print("<a href=\"/PHP/SearchItemsByCategory.php?category=".$row["id"]."&categoryName=".urlencode($row["name"])."\">".$row["name"]."</a><br>\n");
     }
     mysql_free_result($result);
-    mysql_close($link);
+    $link->close();
 
     printHTMLfooter($scriptName, $startTime);
     ?>

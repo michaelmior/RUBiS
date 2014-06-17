@@ -100,7 +100,7 @@
           "<input type=submit value=\"Post this comment now!\"></center><p>\n");
 
     mysql_free_result($result);
-    mysql_close($link);
+    $link->close();
 
     printHTMLfooter($scriptName, $startTime);
     ?>

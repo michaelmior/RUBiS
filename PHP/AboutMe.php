@@ -329,7 +329,7 @@
     mysql_free_result($pastSellsResult);
     mysql_free_result($wonItemsResult);
     mysql_free_result($buyNowResult);
-    mysql_close($link);
+    $link->close();
 
     printHTMLfooter($scriptName, $startTime);
     ?>

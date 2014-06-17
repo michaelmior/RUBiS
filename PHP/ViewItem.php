@@ -105,7 +105,7 @@
 
     mysql_free_result($maxBidResult);
     mysql_free_result($result);
-    mysql_close($link);
+    $link->close();
 
     printHTMLfooter($scriptName, $startTime);
     ?>
