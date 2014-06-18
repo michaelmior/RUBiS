@@ -1,11 +1,44 @@
 <?php
 
-function getDatabaseLink(&$link) {
-    $link = mysql_pconnect("localhost", "cecchet", "") or
-        die ("ERROR: Could not connect to database");
-    mysql_select_db("rubis", $link) or
-        die("ERROR: Couldn't select RUBiS database");
+require "vendor/autoload.php";
+
+use phpcassa\Connection\ConnectionPool;
+use phpcassa\ColumnFamily;
+
+class ColumnFamilies {
+  private $pool;
+  private $cfs;
+
+  public function __construct($pool) {
+    $this->pool = $pool;
+    $this->cfs = [];
+  }
+
+  public function __isset($offset) {
+    return array_key_exists($offset, $this->cfs);
+  }
+
+  public function __get($offset) {
+    if (!$this->__isset($offset)) {
+      $cfs[$offset] = new ColumnFamily($this->pool, $offset);
+    }
+
+    return $cfs[$offset];
+  }
+
+  public function close() {
+    $this->pool->close();
+  }
 }
+
+function getDatabaseLink(&$link)
+{
+  $pool = new ConnectionPool('RUBBoS');
+  $link = new ColumnFamilies($pool);
+}
+
+$link = null;
+getDatabaseLink($link);
 
 function getMicroTime() {
     list($usec, $sec) = explode(" ", microtime());
