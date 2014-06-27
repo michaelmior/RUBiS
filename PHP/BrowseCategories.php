@@ -33,21 +33,23 @@
 
     printHTMLheader("RUBiS available categories");
 
-    $result = mysql_query("SELECT * FROM categories", $link) or die("ERROR: Query failed");
-    if (mysql_num_rows($result) == 0)
-      print("<h2>Sorry, but there is no category available at this time. Database table is empty</h2><br>\n");
-    else
-      print("<h2>Currently available categories</h2><br>\n");
-
-    while ($row = mysql_fetch_array($result))
-    {
-      if ($region != NULL)
-        print("<a href=\"/PHP/SearchItemsByRegion.php?category=".$row["id"]."&categoryName=".urlencode($row["name"])."&region=$region\">".$row["name"]."</a><br>\n");
-      else if ($userId != -1)
-        print("<a href=\"/PHP/SellItemForm.php?category=".$row["id"]."&user=$userId\">".$row["name"]."</a><br>\n");
+    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+      $categories = $link->categories->get_range();
+      if ($categories->current() === FALSE)
+        print("<h2>Sorry, but there is no category available at this time. Database table is empty</h2><br>\n");
       else
-        print("<a href=\"/PHP/SearchItemsByCategory.php?category=".$row["id"]."&categoryName=".urlencode($row["name"])."\">".$row["name"]."</a><br>\n");
+        print("<h2>Currently available categories</h2><br>\n");
+
+      foreach ($categories as $id => $row) {
+        if ($region != NULL)
+          print("<a href=\"/PHP/SearchItemsByRegion.php?category=".$id."&categoryName=".urlencode($row["name"])."&region=$region\">".$row["name"]."</a><br>\n");
+        else if ($userId != -1)
+          print("<a href=\"/PHP/SellItemForm.php?category=".$row["id"]."&user=$userId\">".$row["name"]."</a><br>\n");
+        else
+          print("<a href=\"/PHP/SearchItemsByCategory.php?category=".$id."&categoryName=".urlencode($row["name"])."\">".$row["name"]."</a><br>\n");
+      }
     }
+
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);

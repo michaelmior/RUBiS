@@ -9,16 +9,19 @@
     printHTMLheader("RUBiS available regions");
 
     getDatabaseLink($link);
-    $result = mysql_query("SELECT * FROM regions", $link) or die("ERROR: Query failed");
-    if (mysql_num_rows($result) == 0)
-      print("<h2>Sorry, but there is no region available at this time. Database table is empty</h2><br>");
-    else
-      print("<h2>Currently available regions</h2><br>");
+    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+      $regions = $link->regions->get_range();
+      if ($regions->current() === FALSE)
+        print("<h2>Sorry, but there is no region available at this time. Database table is empty</h2><br>");
+      else
+        print("<h2>Currently available regions</h2><br>");
 
-    while ($row = mysql_fetch_array($result))
-    {
-      print("<a href=\"/PHP/BrowseCategories.php?region=".$row["id"]."\">".$row["name"]."</a><br>\n");
+      foreach ($regions as $id => $row) {
+          print("<a href=\"/PHP/BrowseCategories.php?region=".$id."\">".$row["name"]."</a><br>\n");
+      }
     }
+
+
     $link->close();
 
     printHTMLfooter($scriptName, $startTime);
