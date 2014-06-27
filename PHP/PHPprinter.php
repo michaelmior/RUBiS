@@ -2,6 +2,8 @@
 
 require "vendor/autoload.php";
 
+set_time_limit(0);
+
 use phpcassa\Connection\ConnectionPool;
 use phpcassa\ColumnFamily;
 
@@ -30,6 +32,12 @@ class ColumnFamilies {
     $this->pool->close();
   }
 }
+
+abstract class SchemaType {
+    const RELATIONAL = 1;
+}
+
+$CURRENT_SCHEMA = SchemaType::RELATIONAL;
 
 function getDatabaseLink(&$link)
 {
