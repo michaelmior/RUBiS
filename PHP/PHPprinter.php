@@ -41,7 +41,7 @@ $CURRENT_SCHEMA = SchemaType::RELATIONAL;
 
 function getDatabaseLink(&$link)
 {
-  $pool = new ConnectionPool('RUBBoS');
+  $pool = new ConnectionPool('RUBiS');
   $link = new ColumnFamilies($pool);
 }
 

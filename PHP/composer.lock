@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "5957a31633026803d9783b28aebb27f6",
+    "hash": "348ce8e1829a7786fef1b9d76e59309a",
     "packages": [
         {
             "name": "thobbs/phpcassa",
-            "version": "dev-master",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thobbs/phpcassa.git",
-                "reference": "5d90e13f1c7593fb023025f45f0769874a968277"
+                "reference": "de64e1af0bc884cda2950dd7652d3f0cf91e5942"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thobbs/phpcassa/zipball/5d90e13f1c7593fb023025f45f0769874a968277",
-                "reference": "5d90e13f1c7593fb023025f45f0769874a968277",
+                "url": "https://api.github.com/repos/thobbs/phpcassa/zipball/de64e1af0bc884cda2950dd7652d3f0cf91e5942",
+                "reference": "de64e1af0bc884cda2950dd7652d3f0cf91e5942",
                 "shasum": ""
             },
             "require": {
@@ -46,15 +46,23 @@
             "keywords": [
                 "cassandra"
             ],
-            "time": "2014-04-09 17:14:24"
+            "time": "2013-07-31 22:42:56"
         }
     ],
-    "packages-dev": [],
-    "aliases": [],
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "thobbs/phpcassa": 20
-    },
-    "platform": [],
-    "platform-dev": []
+    "stability-flags": [
+
+    ],
+    "platform": [
+
+    ],
+    "platform-dev": [
+
+    ]
 }

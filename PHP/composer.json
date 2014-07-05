@@ -2,6 +2,6 @@
     "name": "michaelmior/rubis-cassandra",
     "description": "A Cassandra port of the PHP implementation of the RUBiS benchmark",
     "require": {
-        "thobbs/phpcassa": "dev-master"
+        "thobbs/phpcassa": "v1.1.0"
     }
 }
