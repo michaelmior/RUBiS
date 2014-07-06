@@ -6,41 +6,35 @@
     require "PHPprinter.php";
     $startTime = getMicroTime();
 
-    $categoryName = $_POST['categoryName'];
-    if ($categoryName == null)
-    {
-      $categoryName = $_GET['categoryName'];
-      if ($categoryName == null)
-      {
-         printError($scriptName, $startTime, "Search Items By Category", "You must provide a category name!<br>");
-         exit();
-      }
+    $categoryName = $_GET['categoryName'];
+    if ($categoryName == null) {
+        printError(
+            $scriptName,
+            $startTime,
+            "Search Items By Category",
+            "You must provide a category name!<br>"
+        );
+        exit();
     }
 
-    $categoryId = $_POST['category'];
-    if ($categoryId == null)
-    {
-      $categoryId = $_GET['category'];
-      if ($categoryId == null)
-      {
-         printError($scriptName, $startTime, "Search Items By Category", "You must provide a category identifier!<br>");
-         exit();
-      }
+    $categoryId = $_GET['category'];
+    if ($categoryId == null) {
+        printError(
+            $scriptName,
+            $startTime,
+            "Search Items By Category",
+            "You must provide a category identifier!<br>"
+        );
+        exit();
     }
 
-    $page = $_POST['page'];
-    if ($page == null)
-    {
-      $page = $_GET['page'];
-      if ($page == null)
+    $page = @$_GET['page'];
+    if ($page == null) {
         $page = 0;
     }
 
-    $nbOfItems = $_POST['nbOfItems'];
-    if ($nbOfItems == null)
-    {
-      $nbOfItems = $_GET['nbOfItems'];
-      if ($nbOfItems == null)
+    $nbOfItems = @$_GET['nbOfItems'];
+    if ($nbOfItems == null) {
         $nbOfItems = 25;
     }
 
@@ -48,13 +42,23 @@
     print("<h2>Items in category $categoryName</h2><br><br>");
 
     getDatabaseLink($link);
-    $result = mysql_query("SELECT items.id,items.name,items.initial_price,items.max_bid,items.nb_of_bids,items.end_date FROM items WHERE category=$categoryId AND end_date>=NOW() LIMIT ".$page*$nbOfItems.",$nbOfItems", $link) or die("ERROR: Query failed");
-    if (mysql_num_rows($result) == 0)
-    {
-      if ($page == 0)
+    $found = true;
+
+    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+        try {
+            $item_ids = array_keys($link->category_id->get($categoryId));
+            $items = $link->items->multiget($item_ids, $column_slice=null, $column_names=array("name", "initial_price", "max_bid", "nb_of_bids", "end_date"));
+            $items = array_slice($items, $page * $nbOfItems, ($page + 1) * $nbOfItems);
+            // TODO Add date filter
+        } catch (cassandra\NotFoundException $e) {
+            $found = false;
+        }
+    }
+
+    if (!$found) {
+      if ($page == 0) {
         print("<h2>Sorry, but there are no items available in this category !</h2>");
-      else
-      {
+      } else {
         print("<h2>Sorry, but there are no more items available in this category !</h2>");
         print("<p><CENTER>\n<a href=\"/PHP/SearchItemsByCategory.php?category=$categoryId".
               "&categoryName=".urlencode($categoryName)."&page=".($page-1)."&nbOfItems=$nbOfItems\">Previous page</a>\n</CENTER>\n");
@@ -62,17 +66,14 @@
       $link->close();
       printHTMLfooter($scriptName, $startTime);
       exit();
-    }
-    else
-    {
+    } else {
       print("<TABLE border=\"1\" summary=\"List of items\">".
             "<THEAD>".
             "<TR><TH>Designation<TH>Price<TH>Bids<TH>End Date<TH>Bid Now".
             "<TBODY>");
     }
 
-    while ($row = mysql_fetch_array($result))
-    {
+    foreach ($items as $row) {
       $maxBid = $row["max_bid"];
       if ($maxBid == 0)
     $maxBid = $row["initial_price"];
