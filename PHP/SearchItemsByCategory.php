@@ -2,6 +2,8 @@
 <html>
   <body>
     <?php
+    use phpcassa\ColumnSlice;
+
     $scriptName = "SearchItemsByCategories.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
@@ -46,9 +48,10 @@
 
     if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
         try {
-            $item_ids = array_keys($link->category_id->get($categoryId));
+            $slice = new ColumnSlice('', '', $count=($page + 1) * $nbOfItems);
+            $item_ids = array_keys($link->category_id->get($categoryId, $slice));
+            $item_ids = array_slice($item_ids, $page * $nbOfItems, ($page + 1) * $nbOfItems);
             $items = $link->items->multiget($item_ids, $column_slice=null, $column_names=array("name", "initial_price", "max_bid", "nb_of_bids", "end_date"));
-            $items = array_slice($items, $page * $nbOfItems, ($page + 1) * $nbOfItems);
             // TODO Add date filter
         } catch (cassandra\NotFoundException $e) {
             $found = false;
