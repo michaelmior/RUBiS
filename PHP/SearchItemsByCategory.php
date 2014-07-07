@@ -73,16 +73,16 @@
             "<TBODY>");
     }
 
-    foreach ($items as $row) {
+    foreach ($items as $id => $row) {
       $maxBid = $row["max_bid"];
       if ($maxBid == 0)
-    $maxBid = $row["initial_price"];
+        $maxBid = $row["initial_price"];
 
-      print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$row["id"]."\">".$row["name"].
+      print("<TR><TD><a href=\"/PHP/ViewItem.php?itemId=".$id."\">".$row["name"].
             "<TD>$maxBid".
             "<TD>".$row["nb_of_bids"].
             "<TD>".$row["end_date"].
-            "<TD><a href=\"/PHP/PutBidAuth.php?itemId=".$row["id"]."\"><IMG SRC=\"/PHP/bid_now.jpg\" height=22 width=90></a>");
+            "<TD><a href=\"/PHP/PutBidAuth.php?itemId=".$id."\"><IMG SRC=\"/PHP/bid_now.jpg\" height=22 width=90></a>");
     }
     print("</TABLE>");
 

@@ -6,7 +6,7 @@
     require "PHPprinter.php";
     $startTime = getMicroTime();
 
-    $itemId = $_GET['itemId'];
+    $itemId = @$_GET['itemId'];
     if ($itemId == null) {
          printError($scriptName, $startTime, "Viewing item", "You must provide an item identifier!<br>");
          exit();

@@ -6,29 +6,20 @@
     require "PHPprinter.php";
     $startTime = getMicroTime();
 
-    $region = $_POST['region'];
-    if ($region == null)
-      $region = $_GET['region'];
-
-    $username = $_POST['nickname'];
-    if ($username == null)
-      $username = $_GET['nickname'];
-
-    $password = $_POST['password'];
-    if ($password == null)
-      $password = $_GET['password'];
+    $region = $_GET['region'];
+    $username = @$_GET['nickname'];
+    $password = @$_GET['password'];
 
     getDatabaseLink($link);
 
     $userId = -1;
-    if (($username != null && $username !="") || ($password != null && $password !=""))
-    { // Authenticate the user
-      $userId = authenticate($username, $password, $link);
-      if ($userId == -1)
-      {
-        printError($scriptName, $startTime, "Authentication", "You don't have an account on RUBiS!<br>You have to register first.<br>\n");
-        exit();
-      }
+    if (($username != null && $username !="") || ($password != null && $password !="")) {
+        // Authenticate the user
+        $userId = authenticate($username, $password, $link);
+        if ($userId == -1) {
+            printError($scriptName, $startTime, "Authentication", "You don't have an account on RUBiS!<br>You have to register first.<br>\n");
+            exit();
+        }
     }
 
     printHTMLheader("RUBiS available categories");
