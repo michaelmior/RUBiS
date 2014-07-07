@@ -5,7 +5,7 @@ include ../config.mk
 ####################
 
 ClientFiles = URLGenerator URLGeneratorPHP RUBiSProperties Stats \
-	      TransitionTable ClientEmulator UserSession InitDB
+	      TransitionTable ClientEmulator UserSession
 
 BeansFiles = TimeManagement
 
@@ -17,9 +17,6 @@ client: $(all_client_obj)
 	zip -d rubis_client.jar dummy.txt
 
 all: client
-
-initDB:
-	${JAVA} -classpath .:./database edu.rice.rubis.client.InitDB ${PARAM}
 
 emulator:
 	${JAVA} -classpath . edu.rice.rubis.client.ClientEmulator

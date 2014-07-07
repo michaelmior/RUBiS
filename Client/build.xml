@@ -66,16 +66,4 @@
 	   fork="yes"/>
   </target>
 
-  <!-- init db
-  <target name="initDB" depends="init, compile">
-     <java classname="edu.rice.rubis.client.InitDB"
-	   classpath="${build}/RUBiS-${version}:.:./database"
-	   fork="yes">
-          <arg value="${initDB.param}"/> 
-     </java>
-
-  </target>
-
--->
-
 </project>

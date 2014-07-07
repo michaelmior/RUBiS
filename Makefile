@@ -9,9 +9,6 @@ include config.mk
 client:
 	cd Client ; make all
 
-initDB:
-	${JAVA} -classpath ./Client:./database edu.rice.rubis.client.InitDB ${PARAM}
-
 emulator:
 	${JAVA} -classpath ./Client edu.rice.rubis.client.ClientEmulator
 
