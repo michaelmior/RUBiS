@@ -193,7 +193,7 @@ public class RUBiSProperties
       // # Workload
       System.out.println("\n<h3><br>### Workload ###</h3>");
       System.out.print("Remote client nodes            : ");
-      nodes = new StringTokenizer(getProperty("workload_remote_client_nodes"),
+      StringTokenizer nodes = new StringTokenizer(getProperty("workload_remote_client_nodes"),
           ",");
       remoteClients = new Vector(nodes.countTokens());
       while (nodes.hasMoreTokens())
