@@ -9,7 +9,7 @@ use phpcassa\ColumnFamily;
 
 // Create a new keyspace and column family
 echo "Recreating keyspace\n";
-$sys = new SystemManager('127.0.0.1');
+$sys = new SystemManager(gethostbyname(php_uname('n')));
 try {
     $sys->drop_keyspace("RUBiS");
 } catch (cassandra\InvalidRequestException $e) {
@@ -33,7 +33,7 @@ $indices = array(
         "seller_id" => array("seller"),
         "category_id" => array("category")
     ),
-    "old_items" => array(
+    "olditems" => array(
         "old_seller_id" => array("seller"),
         "old_category_id" => array("category")
     ),
@@ -63,7 +63,7 @@ foreach (array(
     "buynow") as $cf_name) {
 
     echo "Creating column family $cf_name\n";
-    $sys->create_column_family("RUBiS", $cf_name);
+    $sys->create_column_family("RUBiS", $cf_name, array("comparator_type" => "AsciiType"));
 
     if (array_key_exists($cf_name, $indices)) {
         $cf_indices = $indices[$cf_name];
@@ -78,6 +78,7 @@ foreach (array(
             $key_validation_class = "AsciiType";
         }
 
+        echo "Creating column family $index_name\n";
         $sys->create_column_family(
             "RUBiS",
             $index_name,
@@ -86,35 +87,6 @@ foreach (array(
             )
         );
     }
-    sleep(10);
-
-    echo "Loading data for $cf_name\n";
-    $handle = fopen("csv" . DIRECTORY_SEPARATOR . $cf_name . ".csv", "r");
-    $pool = new ConnectionPool("RUBiS");
-    $cf = new ColumnFamily($pool, $cf_name);
-    $header = array_slice(fgetcsv($handle, 0, ",", "'"), 1);
-
-    $index_cfs = array();
-    foreach ($cf_indices as $index_name => $columns) {
-        $index_cfs[$index_name] = new ColumnFamily($pool, $index_name);
-    }
-
-    while ($data = fgetcsv($handle, 0, ",", "'")) {
-        $cf->insert($data[0], array_combine($header, array_slice($data, 1)));
-        foreach ($cf_indices as $index_name => $columns) {
-            $values = array_map(
-                function ($column) use ($data, $header) {
-                    return $data[array_search($column, $header) + 1];
-                },
-                $columns
-            );
-            if (count($values) === 1) {
-                $values = $values[0];
-            }
-            $index_cfs[$index_name]->insert($values, array($data[0] => ' '));
-        }
-    }
-    $pool->close();
 }
 
 $sys->close();
