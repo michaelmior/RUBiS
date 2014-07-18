@@ -18,16 +18,22 @@
     }
 
     getDatabaseLink($link);
-    $userResult = mysql_query("SELECT * FROM users WHERE users.id=$userId", $link) or die("ERROR: Query failed");
-    if (mysql_num_rows($userResult) == 0)
-    {
+
+    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+        try {
+            $userRow = $link->users->get($userId);
+        } catch (cassandra\NotFoundException $e) {
+            $userRow = null;
+        }
+    }
+
+    if (!$userRow) {
       die("<h3>ERROR: Sorry, but this user does not exist.</h3><br>\n");
     }
 
     printHTMLheader("RUBiS: View user information");
 
       // Get general information about the user
-    $userRow = mysql_fetch_array($userResult);
     $firstname = $userRow["firstname"];
     $lastname = $userRow["lastname"];
     $nickname = $userRow["nickname"];
@@ -41,23 +47,35 @@
     print("User since     : ".$creationDate."<br>");
     print("Current rating : <b>".$rating."</b><br>");
 
-      // Get the comments about the user
-    $commentsResult = mysql_query("SELECT * FROM comments WHERE comments.to_user_id=$userId", $link) or die("ERROR: Query failed for the list of comments.");
-    if (mysql_num_rows($commentsResult) == 0)
-      print("<h2>There is no comment for this user.</h2><br>\n");
-    else
-    {
+    // Get the comments about the user
+    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+        $comment_ids = array_keys($link->to_user->get($userId));
+        if (count($comment_ids) == 0) {
+            $commentsResult = array();
+        } else {
+            $commentsResult = $link->comments->multiget($comment_ids);
+        }
+    }
+
+    if (count($commentsResult) == 0) {
+        print("<h2>There is no comment for this user.</h2><br>\n");
+    } else {
     print("<DL>\n");
-    while ($commentsRow = mysql_fetch_array($commentsResult))
-    {
+    foreach ($commentsResult as $commentsRow) {
         $authorId = $commentsRow["from_user_id"];
-        $authorResult = mysql_query("SELECT nickname FROM users WHERE users.id=$authorId", $link) or die("ERROR: Query failed for the comment author.");
-        if (mysql_num_rows($authorResult) == 0)
-        die("ERROR: This author does not exist.<br>\n");
-        else
-        {
-        $authorRow = mysql_fetch_array($authorResult);
-        $authorName = $authorRow["nickname"];
+
+        if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+            try {
+                $authorRow = $link->users->get($authorId, $column_slice=null, $column_names=array("nickname"));
+            } catch (cassandra\NotFoundException $e) {
+                $authorRow = null;
+            }
+        }
+
+        if (!$authorRow) {
+            die("ERROR: This author does not exist.<br>\n");
+        } else {
+            $authorName = $authorRow["nickname"];
         }
         $date = $commentsRow["date"];
         $comment = $commentsRow["comment"];
