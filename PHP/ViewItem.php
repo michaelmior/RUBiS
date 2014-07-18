@@ -27,7 +27,7 @@
 
         try {
             $bid_ids = array_keys($link->bid_item->get($itemId));
-            $bids = array_values($link->bids->multiget($bid_ids, $column_slice=null, $column_names=array("bid")));
+            $bids = call_user_func_array('array_merge', array_map('array_values', $link->bids->multiget($bid_ids, $column_slice=null, $column_names=array("bid"))));
             $maxBid = count($bids) > 0 ? max($bids) : 0;
         } catch (cassandra\NotFoundException $e) {
             $maxBid = 0;
