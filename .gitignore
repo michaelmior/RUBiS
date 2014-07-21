@@ -3,3 +3,4 @@ database/rubis_dump.sql
 *.jar
 *.class
 Client/bench/
+Client/dist/
