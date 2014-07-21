@@ -487,6 +487,11 @@ public class UserSession extends Thread
         // we have to go back
         state = transition.backToPreviousState();
     }
+
+    // XXX Disable region browsing
+    if (state == 6) { state = 4; }
+    if (state == 7) { state = 5; }
+
     switch (state)
     {
       case -1 :
