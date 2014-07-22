@@ -11,7 +11,7 @@
     getDatabaseLink($link);
     if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
       $regions = $link->regions->get_range();
-      if ($regions->current() === FALSE)
+      if (!!current($regions))
         print("<h2>Sorry, but there is no region available at this time. Database table is empty</h2><br>");
       else
         print("<h2>Currently available regions</h2><br>");

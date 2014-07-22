@@ -6,7 +6,7 @@
     require "PHPprinter.php";
     $startTime = getMicroTime();
 
-    $region = $_GET['region'];
+    $region = @$_GET['region'];
     $username = @$_GET['nickname'];
     $password = @$_GET['password'];
 
@@ -26,7 +26,7 @@
 
     if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
       $categories = $link->categories->get_range();
-      if ($categories->current() === FALSE)
+      if (!!current($categories))
         print("<h2>Sorry, but there is no category available at this time. Database table is empty</h2><br>\n");
       else
         print("<h2>Currently available categories</h2><br>\n");
