@@ -6,7 +6,7 @@
     require "PHPprinter.php";
     $startTime = getMicroTime();
 
-    $userId = $_POST['userId'];
+    $userId = $_GET['userId'];
     if ($userId == null)
     {
       $userId = $_GET['userId'];
@@ -49,11 +49,11 @@
 
     // Get the comments about the user
     if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
-        $comment_ids = array_keys($link->to_user->get($userId));
-        if (count($comment_ids) == 0) {
-            $commentsResult = array();
-        } else {
+        try {
+            $comment_ids = array_keys($link->to_user->get($userId));
             $commentsResult = $link->comments->multiget($comment_ids);
+        } catch (cassandra\NotFoundException $e) {
+            $commentsResult = array();
         }
     }
 
