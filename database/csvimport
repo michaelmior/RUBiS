@@ -1,0 +1,85 @@
+#!/bin/bash
+set -e
+set -x
+
+data_dir="/var/lib/cassandra"
+index=0
+
+while getopts ":d:i" opt; do
+    case $opt in
+        d)
+            data_dir=$OPTARG
+            ;;
+        i)
+            index=1
+            ;;
+       \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ $OPTIND -ne $# ]; then
+    echo "You must provide the name of the keyspace"
+    exit 1
+fi
+
+keyspace=${@:$OPTIND:1}
+tmp_dir=`mktemp -d`
+
+# Split the input files into chunks
+for csv_file in *.csv; do
+    csv_name=`echo "$csv_file" | rev | cut -d . -f1 --complement | rev`
+
+    if [ "$index" -eq 1 ]; then
+        split -l 1000000 -d "$csv_file" "$tmp_dir/$csv_name."
+    else
+        # Don't include the header in the split files, add it back later
+        tail -n +2 "$csv_file" | split -l 1000000 -d - "$tmp_dir/$csv_name."
+    fi
+
+    rm -rf "$data_dir/data/$keyspace/$csv_name"/*
+done
+
+# Convert each chunk to JSON and then output the SSTable file
+for split_file in "$tmp_dir"/*; do
+    csv_name=`basename "$split_file" | rev | cut -d . -f1 --complement | rev`
+    index_fields=0
+    extra_fields=1
+    if [ "$index" -eq 1 ]; then
+        index_fields=`echo "$csv_name" | sed -r 's/.*-(index|view)-([0-9]+)-[0-9]+/\2/'`
+        extra_fields=`echo "$csv_name" | sed -r 's/.*-(index|view)-[0-9]+-([0-9]+)/\2/'`
+        csv_name=`echo "$csv_name" | sed -r 's/(.*)-(index|view)-[0-9]+-[0-9]+/\1/'`
+        csv_type=`echo "$csv_name" | sed -r 's/.*-(index|view)-[0-9]+-[0-9]+/\1/'`
+    else
+        mv "$split_file" "$tmp_dir/tmp_csv"
+        head -1 "$csv_name.csv" >> "$split_file"
+        cat "$tmp_dir/tmp_csv" >> "$split_file"
+        rm "$tmp_dir/tmp_csv"
+    fi
+
+    csv_num=$((`basename "$split_file" | rev | cut -d . -f1 | rev` + 1))
+    json_file="$tmp_dir/$csv_name.$csv_num.json"
+
+    csv2sstable -i $index_fields -e $extra_fields "$split_file" "$json_file"
+    json2sstable -K "$keyspace" -c "$csv_name" "$json_file" \
+        "$data_dir/data/$keyspace/$csv_name/$keyspace-$csv_name-jb-$csv_num-Data.db"
+done
+
+# Ask Cassandra to reload and compact the data
+for csv_file in *.csv; do
+    csv_name=`echo "$csv_file" | rev | cut -d . -f1 --complement | rev`
+    if [ "$index" -eq 1 ]; then
+        csv_name=`echo "$csv_name" | sed -r 's/(.*)-(index|view)-[0-9]+/\2/'`
+    fi
+
+    nodetool refresh "$keyspace" "$csv_name" 2> /dev/null
+    nodetool compact "$keyspace" "$csv_name" 2> /dev/null
+done
+
+rm -r "$tmp_dir"

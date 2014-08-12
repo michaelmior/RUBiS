@@ -1,0 +1,24 @@
+#!/bin/bash
+set -x
+set -e
+
+mkdir -p index
+
+./csvindex users nickname,password index/auth
+./csvindex users region index/region
+
+./csvindex items seller index/seller_id
+./csvindex items category index/category_id
+
+./csvindex olditems seller index/old_seller_id
+./csvindex olditems category index/old_category_id
+
+./csvindex bids item_id index/bid_item
+./csvindex bids user_id index/bid_user
+
+./csvindex comments from_user_id index/from_user
+./csvindex comments to_user_id index/to_user
+./csvindex comments item_id index/item
+
+./csvindex buynow buyer_id,date index/buyer
+./csvindex buynow item_id index/buy_now_item

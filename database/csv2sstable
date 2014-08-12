@@ -1,0 +1,94 @@
+#!/usr/bin/python
+
+import argparse
+import csv
+import json
+import os
+import re
+import sys
+import time
+
+parser = argparse.ArgumentParser(
+            description='Convert CSV files to JSON suitable for json2sstable')
+parser.add_argument('csv_name', help='name of the input CSV file')
+parser.add_argument('json_name', help='name of the output JSON file')
+parser.add_argument('-i', '--index-fields', dest='index', action='store',
+                    type=int, default=None,
+                    help='treat the input as an index over the given fields')
+parser.add_argument('-e', '--extra', action='store', type=int, default=1,
+                    help='whether to consider an index as a view')
+args = parser.parse_args()
+
+# Open the JSON file and an array at the start
+json_file = open(args.json_name, 'w')
+json_file.write('[')
+
+def encode(value):
+    """
+    Encode values by their hexadecimal ASCII character codes
+    """
+    return ''.join([hex(ord(c))[2:] for c in value])
+
+def encode_many(*values):
+    # Composite value
+    # Format is an 8 byte length, the encoded string,
+    # followed by four null bytes, all hex encoded
+    return ''.join([
+        hex(len(key))[2:].zfill(4) + encode(key) + '00' for key in values])
+
+with open(args.csv_name, 'r') as csv_file:
+    # Default parameters
+    reader = csv.reader(csv_file,
+                        delimiter=',', quotechar='\'', escapechar='\\')
+
+    if args.index and args.extra > 1:
+        header = reader.next()[args.index + 1:]
+    if not args.index and args.extra == 1:
+        header = reader.next()[1:]
+
+    for row in reader:
+        # Generate a dictionary
+        if args.index:
+            row_dict = {
+                'columns': []
+            }
+
+            if args.index == 1:
+                row_dict['key'] = encode(row[0])
+            else:
+                row_dict['key'] = encode_many(*row[:args.index])
+
+            if args.extra > 1:
+                for i, value in enumerate(row[args.index + 1:]):
+                    column_key = encode_many(header[i], row[args.index])
+                    row_dict['columns'].append((
+                        column_key,             # Composite key
+                        encode(value),          # Extra value
+                        int(time.time() * 1e6)  # Timestamp in nanoseconds
+                    ))
+            else:
+                for value in row[args.index:]:
+                    row_dict['columns'].append((
+                        encode(value),          # Index value
+                        encode(' '),            # Empty column data
+                        int(time.time() * 1e6)  # Timestamp in nanoseconds
+                    ))
+        else:
+            row_dict = {
+                'key': encode(row[0]),
+                'columns': []
+            }
+            for i, value in enumerate(row[1:]):
+                row_dict['columns'].append((
+                    header[i],              # Column name
+                    encode(value),          # Column value
+                    int(time.time() * 1e6)  # Timestamp in nanoseconds
+                ))
+
+        # Write this row and a trailing comma
+        json_file.write(json.dumps(row_dict))
+        json_file.write(',')
+
+# Erase the final comma and close the array
+json_file.seek(-1, os.SEEK_END)
+json_file.write(']')
