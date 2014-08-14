@@ -2,7 +2,10 @@
 
 import argparse
 import json
+import os
 import subprocess
+
+os.environ['PATH'] = '%s:%s' % (os.path.dirname(os.path.abspath(__file__)), os.environ['PATH'])
 
 parser = argparse.ArgumentParser(
             description='Create all indices listed in sadvisor JSON output')
@@ -13,12 +16,26 @@ with open(args.json_name, 'r') as json_file:
     output = json.loads(''.join(json_file.readlines()))
 
 for index in output['indexes']:
-    fields = ','.join([field.split('.')[-1] for field in index['fields']])
-    extra = ','.join([field.split('.')[-1] for field in index['extra']])
-    csv_name = index['path'][0]
+    if len(index['path']) > 1:
+        hash_fields = ','.join([field.replace('.', '_') for field in index['hash_fields']])
+        order_fields = ','.join([field.replace('.', '_') for field in index['order_fields']])
+        extra = ','.join([field.replace('.', '_') for field in index['extra']])
+    else:
+        hash_fields = ','.join([field.split('.')[-1] for field in index['hash_fields']])
+        order_fields = ','.join([field.split('.')[-1] for field in index['order_fields']])
+        extra = ','.join([field.split('.')[-1] for field in index['extra']])
+
+    csv_name = '_'.join(index['path'])
     key = index['key']
-    if extra == 'id':
+    if extra == 'id' or extra == '':
         extra = ''
     else:
         extra = '--extra ' + extra
-    subprocess.call('./csvindex %s %s %s index/%s' % (extra, csv_name, fields, key), shell=True)
+    if order_fields:
+        order = '--order ' + order_fields
+    else:
+        order = ''
+
+    cmd = 'csvindex %s %s %s %s index/%s' % (extra, order, csv_name, hash_fields, key)
+    print(cmd)
+    subprocess.call(cmd, shell=True)

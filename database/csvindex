@@ -3,13 +3,16 @@
 import argparse
 import collections
 import csv
+import os
 
 def comma_separated(s):
     return s.split(',')
 
 parser = argparse.ArgumentParser(
         description='Create a CSV file which serves as an index')
-parser.add_argument('--extra', help='extra fields to include',
+parser.add_argument('-e', '--extra', help='extra fields to include',
+                    type=comma_separated, default=())
+parser.add_argument('-o', '--order', help='extra fields to include',
                     type=comma_separated, default=())
 parser.add_argument('csv_name', help='name of the input CSV (without .csv)')
 parser.add_argument('fields', help='fields to index', type=comma_separated)
@@ -17,19 +20,21 @@ parser.add_argument('index_name', help='name of the output index')
 args = parser.parse_args()
 
 output = collections.defaultdict(lambda: [])
-with open(args.csv_name + '.csv', 'r') as csv_file:
+with open(os.path.join('csv', args.csv_name + '.csv'), 'r') as csv_file:
     reader = csv.reader(csv_file,
             delimiter=',', quotechar='\'', escapechar='\\')
     header = reader.next()
     field_indices = map(lambda f: header.index(f), args.fields)
+    order_indices = map(lambda f: header.index(f), args.order)
 
     if len(args.extra) > 1:
         # Ensure we include the ID at the beginning
+        id_name = next(field for field in header if field.endswith('_id') or field == 'id')
         try:
-            args.extra.remove('id')
+            args.extra.remove(id_name)
         except ValueError:
             pass
-        args.extra.insert(0, 'id')
+        args.extra.insert(0, id_name)
 
     if args.extra:
         extra_indices = map(lambda f: header.index(f), args.extra)
@@ -37,28 +42,29 @@ with open(args.csv_name + '.csv', 'r') as csv_file:
     # Collect all indexed fields
     for row in reader:
         row_fields = tuple([row[i] for i in field_indices])
+        row_order = tuple([row[i] for i in order_indices])
 
         if args.extra:
             extra_fields = tuple([row[i] for i in extra_indices])
-            output[row_fields].append(extra_fields)
+            output[(row_fields, row_order)].append(extra_fields)
         else:
-            output[row_fields].append(int(row[0]))
+            output[(row_fields, row_order)].append(int(row[0]))
 
-out_csv = '%s-index-%d-%d.csv' % \
-        (args.index_name, len(args.fields), max(1, len(args.extra)))
+out_csv = '%s-index-%d-%d-%d.csv' % \
+        (args.index_name, len(args.fields), len(args.order), max(1, len(args.extra)))
 
-with open(out_csv, 'w') as index_file:
+with open(os.path.join('csv', out_csv), 'w') as index_file:
     writer = csv.writer(index_file,
             delimiter=',', quotechar='\'', escapechar='\\')
 
     # Add a header if we're collecting more than IDs
     if args.extra:
-        writer.writerow(args.fields + args.extra)
+        writer.writerow(args.fields + list(args.order) + args.extra)
 
     # Write each set of keys
-    for keys, row_data in output.iteritems():
+    for (keys, order), row_data in output.iteritems():
         if not args.extra:
-            writer.writerow(keys + tuple(row_data))
+            writer.writerow(keys + order + tuple(row_data))
         else:
             for fields in row_data:
-                writer.writerow(keys + fields)
+                writer.writerow(keys + order + fields)
