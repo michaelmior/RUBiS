@@ -16,7 +16,9 @@ parser.add_argument('-i', '--index-fields', dest='index', action='store',
                     type=int, default=None,
                     help='treat the input as an index over the given fields')
 parser.add_argument('-e', '--extra', action='store', type=int, default=1,
-                    help='whether to consider an index as a view')
+                    help='the number of extra fields to store')
+parser.add_argument('-o', '--order', action='store', type=int, default=0,
+                    help='the number of ordered keys')
 args = parser.parse_args()
 
 # Open the JSON file and an array at the start
@@ -36,12 +38,15 @@ def encode_many(*values):
     return ''.join([
         hex(len(key))[2:].zfill(4) + encode(key) + '00' for key in values])
 
-with open(args.csv_name, 'r') as csv_file:
+def encode_many_s(*values):
+    return ':'.join(value.replace(':', '\:') for value in values)
+
+with open(os.path.join('csv', args.csv_name), 'r') as csv_file:
     # Default parameters
     reader = csv.reader(csv_file,
                         delimiter=',', quotechar='\'', escapechar='\\')
 
-    if args.index and args.extra > 1:
+    if args.index:
         header = reader.next()[args.index + 1:]
     if not args.index and args.extra == 1:
         header = reader.next()[1:]
@@ -58,20 +63,31 @@ with open(args.csv_name, 'r') as csv_file:
             else:
                 row_dict['key'] = encode_many(*row[:args.index])
 
+            assert args.index + args.order + args.extra >= len(row) - 1
+
             if args.extra > 1:
-                for i, value in enumerate(row[args.index + 1:]):
-                    column_key = encode_many(header[i], row[args.index])
+                for i, value in enumerate(row[args.index + args.order + 1:]):
+                    column_key = [header[i]] + row[args.index:args.index + args.order]
                     row_dict['columns'].append((
-                        column_key,             # Composite key
-                        encode(value),          # Extra value
-                        int(time.time() * 1e6)  # Timestamp in nanoseconds
+                        encode_many_s(*column_key), # Composite key
+                        encode(value),              # Extra value
+                        int(time.time() * 1e6)      # Timestamp in nanoseconds
                     ))
+            elif args.extra == 1:
+                column_key = row[args.index:-1]
+                value = row[-1]
+                row_dict['columns'].append((
+                    encode_many_s(*column_key), # Composite key
+                    encode(value),              # Extra value
+                    int(time.time() * 1e6)      # Timestamp in nanoseconds
+                ))
             else:
                 for value in row[args.index:]:
+                    column_key = row[args.index:args.index + args.order]
                     row_dict['columns'].append((
-                        encode(value),          # Index value
-                        encode(' '),            # Empty column data
-                        int(time.time() * 1e6)  # Timestamp in nanoseconds
+                        encode_many(*column_key), # Composite key
+                        encode(' '),              # Empty data
+                        int(time.time() * 1e6)    # Timestamp in nanoseconds
                     ))
         else:
             row_dict = {

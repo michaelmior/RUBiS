@@ -1,3 +1,5 @@
 #!/bin/bash
-csvjoin -c id,user_id csv/users.csv csv/bids.csv > csv/bids_users.csv
-sed -i '1c\users_id,users_firstname,users_lastname,users_nickname,users_password,users_email,users_rating,users_balance,users_creation_date,users_region,bids_id,bids_user_id,bids_item_id,bids_qty,bids_bid,bids_max_bid,bids_date' csv/bids_users.csv
+if [ ! -f csv/bids_users.csv ]; then
+    csvjoin -c id,user_id csv/users.csv csv/bids.csv > csv/bids_users.csv
+    sed -i '1c\users_id,users_firstname,users_lastname,users_nickname,users_password,users_email,users_rating,users_balance,users_creation_date,users_region,bids_id,bids_user_id,bids_item_id,bids_qty,bids_bid,bids_max_bid,bids_date' csv/bids_users.csv
+fi
