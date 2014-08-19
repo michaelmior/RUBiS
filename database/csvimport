@@ -74,6 +74,7 @@ for split_file in "$tmp_dir"/*; do
     json_file="$tmp_dir/$csv_name.$csv_num.json"
 
     csv2sstable -i $index_fields -e $extra_fields -o $order_fields "$split_file" "$json_file"
+    sstablemergekeys "$json_file"
     json2sstable -K "$keyspace" -c "$csv_name" "$json_file" \
         "$data_dir/data/$keyspace/$csv_name/$keyspace-$csv_name-jb-$csv_num-Data.db"
 done

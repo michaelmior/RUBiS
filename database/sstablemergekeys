@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import collections
+import os
+import sys
+import json
+
+columns = collections.defaultdict(lambda: [])
+with open(sys.argv[1]) as json_file:
+    keys = json.load(json_file)
+    for key in keys:
+        columns[key['key']] += key['columns']
+
+with open(sys.argv[1], 'w') as json_file:
+    json_file.write('[')
+    for key, columns in  columns.iteritems():
+        json.dump({'key': key, 'columns': columns}, json_file)
+        json_file.write(',')
+
+    json_file.seek(-1, os.SEEK_END)
+    json_file.write(']')
