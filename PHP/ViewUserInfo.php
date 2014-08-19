@@ -2,6 +2,8 @@
 <html>
   <body>
     <?php
+    use phpcassa\ColumnFamily;
+
     $scriptName = "ViewUserInfo.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
@@ -48,7 +50,22 @@
     print("Current rating : <b>".$rating."</b><br>");
 
     // Get the comments about the user
-    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA == SchemaType::UNCONSTRAINED) {
+        $cf = $link->gZr0MkZ;
+        $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+        $comments = array();
+        foreach ($cf->get($userId) as $comment) {
+            $id = $comment[0][0];
+            if (!isset($comments[$id])) {
+                $comments[$id] = array();
+            }
+            $comments[$id][$comment[0][1]] = $comment[1];
+        }
+        $commentsResult = array();
+        foreach ($comments as $id => $comment) {
+            $commentsResult[] = array_merge(array("id" => $id), $comment);
+        }
+    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $comment_ids = array_keys($link->to_user->get($userId));
             $commentsResult = $link->comments->multiget($comment_ids);

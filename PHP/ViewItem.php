@@ -2,6 +2,9 @@
 <html>
   <body>
     <?php
+    use phpcassa\ColumnFamily;
+    use phpcassa\ColumnSlice;
+
     $scriptName = "ViewItem.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
@@ -24,7 +27,14 @@
                 die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
             }
         }
+    }
 
+    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+        $cf = $link->mYK14vA;
+        $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+        $slice = new ColumnSlice('', '', $count=1, $reversed=true);
+        $maxBid = intval($cf->get($itemId, $slice)[0][0][0]);
+    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $bid_ids = array_keys($link->bid_item->get($itemId));
             $bids = call_user_func_array('array_merge', array_map('array_values', $link->bids->multiget($bid_ids, $column_slice=null, $column_names=array("bid"))));
@@ -41,7 +51,19 @@
         $nbOfBids = 0;
     } else {
         if ($row["quantity"] > 1) {
-            if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+            if ($CURRENT_SCHEMA == SchemaType::UNCONSTRAINED) {
+                $cf = $link->qpk4zM0;
+                $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+
+                $nb = 0;
+                foreach ($cf->get($itemId) as $bid) {
+                    $nb += $bid[1];
+                    if ($nb > $row["quantity"]) {
+                        $maxBid = $row["bid"];
+                        break;
+                    }
+                }
+            } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
                 // Fetch bids, sort, and take the top "quantity" number
                 $bid_ids = array_keys($link->bid_item->get($itemId));
                 $bids = $link->bids->multiget($bid_ids);
@@ -52,19 +74,24 @@
                     }
                 );
                 $xRes = array_slice($bids, 0, $row["quantity"]);
-            }
 
-            $nb = 0;
-            foreach ($xRes as $xRow) {
-                $nb += $xRow["qty"];
-                if ($nb > $row["quantity"]) {
-                    $maxBid = $row["bid"];
-                    break;
+                $nb = 0;
+                foreach ($xRes as $xRow) {
+                    $nb += $xRow["qty"];
+                    if ($nb > $row["quantity"]) {
+                        $maxBid = $row["bid"];
+                        break;
+                    }
                 }
             }
         }
         $firstBid = $maxBid;
-        $nbOfBids = $link->bid_item->get_count($itemId);
+
+        if ($CURRENT_SCHEMA == SchemaType::UNCONSTRAINED) {
+            $nbOfBids = $link->__get('9yJGXG3')->get_count($itemId);
+        } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+            $nbOfBids = $link->bid_item->get_count($itemId);
+        }
     }
 
     printHTMLheader("RUBiS: Viewing ".$row["name"]);
