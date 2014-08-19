@@ -46,8 +46,9 @@ foreach (array_slice($argv, 1) as $json_filename) {
             "RUBiS",
             $index_name,
             array(
+                "key_validation_class" => $key_validation_class,
                 "comparator_type" => $comparator_type,
-                "key_validation_class" => $key_validation_class
+                "default_validation_class" => "AsciiType"
             )
         );
     }

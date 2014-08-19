@@ -35,7 +35,7 @@ tmp_dir=`mktemp -d`
 # Split the input files into chunks
 for csv_file in *.csv; do
     # Skip names with _ as these are joins
-    if [[ "$csv_file" == *_* ]]; then continue; fi
+    if [[ "$csv_file" == "bids_users.csv" ]]; then continue; fi
 
     csv_name=`echo "$csv_file" | rev | cut -d . -f1 --complement | rev`
 
@@ -52,19 +52,22 @@ done
 # Convert each chunk to JSON and then output the SSTable file
 for split_file in "$tmp_dir"/*; do
     csv_name=`basename "$split_file" | rev | cut -d . -f1 --complement | rev`
-    index_fields=0
-    order_fields=0
-    extra_fields=1
+
+    # XXX This is wrong to always write the header, will create weird records
+    mv "$split_file" "$tmp_dir/tmp_csv"
+    head -1 "$csv_name.csv" >> "$split_file"
+    cat "$tmp_dir/tmp_csv" >> "$split_file"
+    rm "$tmp_dir/tmp_csv"
+
     if [ "$index" -eq 1 ]; then
         index_fields=`echo "$csv_name" | sed -r 's/.*-index-([0-9]+)-[0-9]+-[0-9]+/\1/'`
         order_fields=`echo "$csv_name" | sed -r 's/.*-index-[0-9]+-([0-9]+)-[0-9]+/\1/'`
         extra_fields=`echo "$csv_name" | sed -r 's/.*-index-[0-9]+-[0-9]+-([0-9]+)/\1/'`
         csv_name=`echo "$csv_name" | sed -r 's/(.*)-index-[0-9]+-[0-9]+-[0-9]+/\1/'`
     else
-        mv "$split_file" "$tmp_dir/tmp_csv"
-        head -1 "$csv_name.csv" >> "$split_file"
-        cat "$tmp_dir/tmp_csv" >> "$split_file"
-        rm "$tmp_dir/tmp_csv"
+        index_fields=0
+        order_fields=0
+        extra_fields=1
     fi
 
     csv_num=$((`basename "$split_file" | rev | cut -d . -f1 | rev` + 1))
@@ -78,7 +81,7 @@ done
 # Ask Cassandra to reload and compact the data
 for csv_file in *.csv; do
     # Skip names with _ as these are joins
-    if [[ "$csv_file" == *_* ]]; then continue; fi
+    if [[ "$csv_file" == "bids_users.csv" ]]; then continue; fi
 
     csv_name=`echo "$csv_file" | rev | cut -d . -f1 --complement | rev`
     if [ "$index" -eq 1 ]; then

@@ -65,7 +65,15 @@ foreach (array(
     "buynow") as $cf_name) {
 
     echo "Creating column family $cf_name\n";
-    $sys->create_column_family("RUBiS", $cf_name, array("comparator_type" => "AsciiType"));
+    $sys->create_column_family(
+        "RUBiS",
+        $cf_name,
+        array(
+            "key_validation_class" => "AsciiType",
+            "comparator_type" => "AsciiType",
+            "default_validation_class" => "AsciiType"
+        )
+    );
 
     if (array_key_exists($cf_name, $indices)) {
         $cf_indices = $indices[$cf_name];
@@ -85,7 +93,9 @@ foreach (array(
             "RUBiS",
             $index_name,
             array(
-                "key_validation_class" => $key_validation_class
+                "key_validation_class" => $key_validation_class,
+                "comparator_type" => "AsciiType",
+                "default_validation_class" => "AsciiType"
             )
         );
     }
