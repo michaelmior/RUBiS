@@ -47,7 +47,7 @@ with open(os.path.join('csv', args.csv_name), 'r') as csv_file:
                         delimiter=',', quotechar='\'', escapechar='\\')
 
     if args.index and args.extra > 1:
-        header = reader.next()[args.index + 1:]
+        header = reader.next()[args.index + args.order:]
     if not args.index and args.extra == 1:
         header = reader.next()[1:]
 
@@ -67,11 +67,11 @@ with open(os.path.join('csv', args.csv_name), 'r') as csv_file:
                 assert args.index + args.order + args.extra >= len(row) - 1
 
             if args.extra > 1:
-                for i, value in enumerate(row[args.index + args.order + 1:]):
-                    column_key = [header[i]] + row[args.index:args.index + args.order]
+                for i, value in enumerate(row[args.index + args.order:]):
+                    column_key = row[args.index:args.index + args.order] + [header[i]]
                     row_dict['columns'].append((
                         encode_many_s(*column_key), # Composite key
-                        encode(value),              # Extra value
+                        value,                      # Extra value
                         int(time.time() * 1e6)      # Timestamp in nanoseconds
                     ))
             elif args.extra == 1:
