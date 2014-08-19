@@ -15,7 +15,7 @@
     getDatabaseLink($link);
 
     // Get the item name
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $itemNameRow = $link->items->get($itemId, $column_slice=null, $column_names=array("name"));
         } catch (cassandra\NotFoundException $e) {
@@ -30,7 +30,7 @@
 
 
     // Get the list of bids for this item
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $bid_ids = array_keys($link->bid_item->get($itemId));
             $bidsListResult = $link->bids->multiget($bid_ids, $column_slice=null, $column_slice=array("bid", "date", "user_id"));
@@ -53,7 +53,7 @@
         $userId = $bidsListRow["user_id"];
         // Get the bidder nickname
         if ($userId != 0) {
-            if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+            if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
                 $userNameRow = $link->users->get($userId, $column_slice=null, $column_names=array("nickname"));
                 $nickname = $userNameRow["nickname"];
             }

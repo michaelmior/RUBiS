@@ -19,7 +19,7 @@
 
     getDatabaseLink($link);
 
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $userRow = $link->users->get($userId);
         } catch (cassandra\NotFoundException $e) {
@@ -48,7 +48,7 @@
     print("Current rating : <b>".$rating."</b><br>");
 
     // Get the comments about the user
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $comment_ids = array_keys($link->to_user->get($userId));
             $commentsResult = $link->comments->multiget($comment_ids);
@@ -64,7 +64,7 @@
     foreach ($commentsResult as $commentsRow) {
         $authorId = $commentsRow["from_user_id"];
 
-        if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+        if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
             try {
                 $authorRow = $link->users->get($authorId, $column_slice=null, $column_names=array("nickname"));
             } catch (cassandra\NotFoundException $e) {

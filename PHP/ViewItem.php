@@ -14,7 +14,7 @@
 
     getDatabaseLink($link);
 
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $row = $link->items->get($itemId);
         } catch (cassandra\NotFoundException $e) {
@@ -41,7 +41,7 @@
         $nbOfBids = 0;
     } else {
         if ($row["quantity"] > 1) {
-            if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+            if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
                 // Fetch bids, sort, and take the top "quantity" number
                 $bid_ids = array_keys($link->bid_item->get($itemId));
                 $bids = $link->bids->multiget($bid_ids);
@@ -82,7 +82,7 @@
         }
     }
 
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         $sellerNameRow = $link->users->get($row["seller"], $column_slice=null, $column_names=array("nickname"));
         $sellerName = $sellerNameRow["nickname"];
     }

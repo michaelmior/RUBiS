@@ -46,7 +46,7 @@
     getDatabaseLink($link);
     $found = true;
 
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $slice = new ColumnSlice('', '', $count=($page + 1) * $nbOfItems);
             $item_ids = array_keys($link->category_id->get($categoryId, $slice));

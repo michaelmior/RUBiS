@@ -24,7 +24,7 @@
 
     printHTMLheader("RUBiS available categories");
 
-    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
       $categories = $link->categories->get_range();
       if (!!current($categories))
         print("<h2>Sorry, but there is no category available at this time. Database table is empty</h2><br>\n");
