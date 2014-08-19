@@ -3,6 +3,7 @@
   <body>
     <?php
     use phpcassa\ColumnSlice;
+    use phpcassa\ColumnFamily;
 
     $scriptName = "SearchItemsByCategories.php";
     require "PHPprinter.php";
@@ -46,13 +47,31 @@
     getDatabaseLink($link);
     $found = true;
 
-    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+        try {
+            $slice = new ColumnSlice(array('2002-04-'), array('2002-05-'), $count=($page + 1) * $nbOfItems);
+            $cf = $link->zg8gDr5;
+            $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+            $itemResults = $cf->get($categoryId, $slice);
+            $items = array();
+            foreach ($itemResults as $itemResult) {
+                $id = $itemResult[0][1];
+                if (!isset($items[$id])) {
+                    $items[$id] = array();
+                    $items[$id]["end_date"] = $itemResult[0][0];
+                }
+                $items[$id][$itemResult[0][2]] = $itemResult[1];
+            }
+        } catch (cassandra\NotFoundException $e) {
+            $found = false;
+        }
+    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $slice = new ColumnSlice('', '', $count=($page + 1) * $nbOfItems);
             $item_ids = array_keys($link->category_id->get($categoryId, $slice));
             $item_ids = array_slice($item_ids, $page * $nbOfItems, ($page + 1) * $nbOfItems);
             $items = $link->items->multiget($item_ids, $column_slice=null, $column_names=array("name", "initial_price", "max_bid", "nb_of_bids", "end_date"));
-            // TODO Add date filter
+            $items = array_filter($items, function($item) { return $item["end_date"] > "2002-04-" && $item["end_date"] < "2002-05"; });
         } catch (cassandra\NotFoundException $e) {
             $found = false;
         }
