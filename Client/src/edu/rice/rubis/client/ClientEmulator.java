@@ -120,171 +120,6 @@ public class ClientEmulator
   }
 
   /**
-   * As the monitoring program now logs activity in a temporary location, we
-   * need to scp the files over *
-   * 
-   * @param node node to launch monitoring program on
-   * @param fileName full path and name of file that has the monitoring data
-   * @param outputDir full path name of the local directory the log file shoudl
-   *          be copied into
-   */
-  private void getMonitoredData(String node, String fileName, String outputDir)
-  {
-    String[] scpCmd = new String[3];
-    String lastName = fileName.substring(fileName.lastIndexOf('/') + 1);
-
-    scpCmd[0] = rubis.getMonitoringScp();
-    scpCmd[1] = node + ":" + fileName;
-    // As the sar log is a binary file, rename it
-    scpCmd[2] = outputDir + "/" + lastName + ".bin";
-
-    try
-    {
-      System.out.println("&nbsp &nbsp Command is: " + scpCmd[0] + " "
-          + scpCmd[1] + " " + scpCmd[2] + "<br>\n");
-
-      Process p = Runtime.getRuntime().exec(scpCmd);
-      p.waitFor();
-      // Now, convert the binary file into ascii form
-      int fullTimeInSec = (rubis.getUpRampTime() + rubis.getSessionTime() + rubis
-          .getDownRampTime()) / 1000 + 5;
-      String[] convCmd = new String[6];
-      convCmd[0] = rubis.getMonitoringRsh();
-      convCmd[1] = "-x";
-      convCmd[2] = "localhost";
-      convCmd[3] = "/bin/bash";
-      convCmd[4] = "-c";
-      convCmd[5] = "'LANG=en_GB.UTF-8 " + rubis.getMonitoringProgram() + " "
-          + rubis.getMonitoringOptions() + " " + rubis.getMonitoringSampling()
-          + " " + fullTimeInSec + " -f " + outputDir + "/" + lastName + ".bin"
-          + " > " + outputDir + "/" + lastName + "'";
-      System.out.println("&nbsp &nbsp Command is: " + convCmd[0] + " "
-          + convCmd[1] + " " + convCmd[2] + " " + convCmd[3] + " " + convCmd[4]
-          + " " + convCmd[5] + "<br>\n");
-      p = Runtime.getRuntime().exec(convCmd);
-      p.waitFor();
-    }
-    catch (InterruptedException ie)
-    {
-      System.out.println("An error occured while executing "
-          + "monitoring program (" + ie.getMessage() + ")");
-
-    }
-    catch (IOException ioe)
-    {
-      System.out.println("An error occured while executing "
-          + "monitoring program (" + ioe.getMessage() + ")");
-    }
-  }
-
-  /**
-   * As the remote HTML files are created in a temporary location, we need to
-   * scp these files over *
-   * 
-   * @param node node to launch monitoring program on
-   * @param fileName full path and name of file that has the monitoring data
-   * @param outputDir full path name of the local directory the log file shoudl
-   *          be copied into
-   */
-  private void getHTMLData(String node, String fileName, String outputDir)
-  {
-    String[] scpCmd = new String[3];
-
-    scpCmd[0] = rubis.getMonitoringScp();
-    scpCmd[1] = node + ":" + fileName;
-    scpCmd[2] = outputDir + "/";
-
-    try
-    {
-      System.out.println("&nbsp &nbsp Command is: " + scpCmd[0] + " "
-          + scpCmd[1] + " " + scpCmd[2] + "<br>\n");
-
-      Process p = Runtime.getRuntime().exec(scpCmd);
-      p.waitFor();
-
-    }
-    catch (InterruptedException ie)
-    {
-      System.out.println("An error occured while executing "
-          + "monitoring program (" + ie.getMessage() + ")");
-
-    }
-    catch (IOException ioe)
-    {
-      System.out.println("An error occured while executing "
-          + "monitoring program (" + ioe.getMessage() + ")");
-    }
-  }
-
-  /**
-   * Start the monitoring program specified in rubis.properties on a remote node
-   * and redirect the output in a file local to this node (we are more happy if
-   * it is on a NFS volume)
-   * 
-   * @param node node to launch monitoring program on
-   * @param outputFileName full path and name of file to redirect output into
-   * @return the <code>Process</code> object created
-   */
-  private Process startMonitoringProgram(String node, String outputFileName)
-  {
-    int fullTimeInSec = (rubis.getUpRampTime() + rubis.getSessionTime() + rubis
-        .getDownRampTime()) / 1000 + 5;
-    // Give 5 seconds extra for init
-
-    // First, try to wipe out the old log files as sar (sysstat)
-    // appends for binary mode
-    try
-    {
-      String[] delFiles = new String[4];
-      Process delProcess;
-      delFiles[0] = rubis.getMonitoringRsh();
-      delFiles[1] = "-x";
-      delFiles[2] = node.trim();
-      delFiles[3] = "rm -f " + outputFileName;
-      System.out.println("&nbsp &nbsp Command is: " + delFiles[0] + " "
-          + delFiles[1] + " " + delFiles[2] + " " + delFiles[3] + "<br>\n");
-      delProcess = Runtime.getRuntime().exec(delFiles);
-      delProcess.waitFor();
-    }
-    catch (IOException ioe)
-    {
-      System.out.println("An error occured while deleting old log files ("
-          + ioe.getMessage() + ")");
-      return null;
-    }
-    catch (InterruptedException ie)
-    {
-      System.out.println("An error occured while deleting old log files ("
-          + ie.getMessage() + ")");
-      return null;
-    }
-
-    try
-    {
-      String[] cmd = new String[6];
-      cmd[0] = rubis.getMonitoringRsh();
-      cmd[1] = "-x";
-      cmd[2] = node.trim();
-      cmd[3] = "/bin/bash";
-      cmd[4] = "-c";
-      cmd[5] = "'LANG=en_GB.UTF-8 " + rubis.getMonitoringProgram() + " "
-          + rubis.getMonitoringOptions() + " " + rubis.getMonitoringSampling()
-          + " " + fullTimeInSec + " -o " + outputFileName + "'";
-      System.out.println("&nbsp &nbsp Command is: " + cmd[0] + " " + cmd[1]
-          + " " + cmd[2] + " " + cmd[3] + " " + cmd[4] + " " + cmd[5]
-          + "<br>\n");
-      return Runtime.getRuntime().exec(cmd);
-    }
-    catch (IOException ioe)
-    {
-      System.out
-          .println("An error occured while executing monitoring program ("
-              + ioe.getMessage() + ")");
-      return null;
-    }
-  }
-
-  /**
    * Run the node_info.sh script on the remote node and just forward what we get
    * from standard output.
    * 
@@ -346,12 +181,6 @@ public class ClientEmulator
     GregorianCalendar runSessionDate;
     GregorianCalendar downRampDate;
     GregorianCalendar endDownRampDate;
-    Process webServerMonitor = null;
-    Process cjdbcServerMonitor = null;
-    Process[] dbServerMonitor = null;
-    Process clientMonitor;
-    Process[] remoteClientMonitor = null;
-    Process[] remoteClient = null;
     String reportDir = "";
     String tmpDir = "/tmp/";
     boolean isMainClient = (args.length <= 2); // Check if we are the main
@@ -445,82 +274,7 @@ public class ClientEmulator
     {
       // Start remote clients
       System.out.println("Total number of clients for this experiment: "
-          + (client.rubis.getNbOfClients() * (client.rubis.getRemoteClients()
-              .size() + 1)) + "<br>");
-      remoteClient = new Process[client.rubis.getRemoteClients().size()];
-      for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-      {
-        try
-        {
-          System.out.println("ClientEmulator: Starting remote client on "
-              + client.rubis.getRemoteClients().get(i) + "<br>\n");
-          String[] rcmdClient = new String[3];
-          rcmdClient[0] = client.rubis.getMonitoringRsh();
-          rcmdClient[1] = (String) client.rubis.getRemoteClients().get(i);
-          rcmdClient[2] = client.rubis.getClientsRemoteCommand() + " " + tmpDir
-              + "trace_client" + (i + 1) + ".html " + tmpDir + "stat_client"
-              + (i + 1) + ".html" + " " + propertiesFileName;
-          remoteClient[i] = Runtime.getRuntime().exec(rcmdClient);
-          System.out.println("&nbsp &nbsp Command is: " + rcmdClient[0] + " "
-              + rcmdClient[1] + " " + rcmdClient[2] + "<br>\n");
-        }
-        catch (IOException ioe)
-        {
-          System.out.println("An error occured while executing remote client ("
-              + ioe.getMessage() + ")");
-        }
-      }
-
-      // Start monitoring programs
-      System.out
-          .println("<CENTER></A><A NAME=\"trace\"><h2>*** Monitoring ***</h2></CENTER>");
-
-      // Monitor Web server
-      System.out
-          .println("ClientEmulator: Starting monitoring program on Web server "
-              + client.rubis.getWebServerName() + "<br>\n");
-      webServerMonitor = client.startMonitoringProgram(client.rubis
-          .getWebServerName(), tmpDir + "web_server");
-
-      // Monitor C-JDBC server (if any)
-      if (cjdbcFlag)
-      {
-        System.out
-            .println("ClientEmulator: Starting monitoring program on CJDBC server "
-                + client.rubis.getCJDBCServerName() + "<br>\n");
-        cjdbcServerMonitor = client.startMonitoringProgram(client.rubis
-            .getCJDBCServerName(), tmpDir + "cjdbc_server");
-      }
-
-      if (client.rubis.getDBServerNames().size() > 0)
-        dbServerMonitor = new Process[client.rubis.getDBServerNames().size()];
-      // Monitor Database server
-      for (int i = 0; i < client.rubis.getDBServerNames().size(); i++)
-      {
-        System.out
-            .println("ClientEmulator: Starting monitoring program on Database server "
-                + client.rubis.getDBServerNames().get(i) + "<br>\n");
-        dbServerMonitor[i] = client.startMonitoringProgram(
-            (String) client.rubis.getDBServerNames().get(i), tmpDir
-                + "db_server" + i);
-      }
-
-      // Monitor local client
-      System.out
-          .println("ClientEmulator: Starting monitoring program locally on client<br>\n");
-      clientMonitor = client.startMonitoringProgram("localhost", tmpDir
-          + "client0");
-
-      remoteClientMonitor = new Process[client.rubis.getRemoteClients().size()];
-      // Monitor remote clients
-      for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-      {
-        System.out
-            .println("ClientEmulator: Starting monitoring program locally on client<br>\n");
-        remoteClientMonitor[i] = client.startMonitoringProgram(
-            (String) client.rubis.getRemoteClients().get(i), tmpDir + "client"
-                + (i + 1));
-      }
+          + (client.rubis.getNbOfClients()) + "<br>");
 
       // Redirect output for traces
       try
@@ -536,25 +290,6 @@ public class ClientEmulator
             + fnf.getMessage() + ")<br>");
       }
     }
-    else
-    { // Redirect output of remote clients
-      System.out.println("Redirecting output to '" + args[0] + "'");
-      try
-      {
-        PrintStream outputStream = new PrintStream(
-            new FileOutputStream(args[0]));
-        System.out.println("Please wait while experiment is running ...");
-        System.setOut(outputStream);
-        System.setErr(outputStream);
-      }
-      catch (Exception e)
-      {
-        System.out
-            .println("Output redirection failed, displaying results on standard output ("
-                + e.getMessage() + ")");
-      }
-      startDate = new GregorianCalendar();
-    }
 
     // #############################
     // ### TEST TRACE BEGIN HERE ###
@@ -564,10 +299,6 @@ public class ClientEmulator
         .println("<CENTER></A><A NAME=\"trace\"><h2>*** Test trace ***</h2></CENTER><p>");
     System.out
         .println("<A HREF=\"trace_client0.html\">Main client traces</A><br>");
-    for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-      System.out.println("<A HREF=\"trace_client" + (i + 1)
-          + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
-          + ") traces</A><br>");
     System.out.println("<br><p>");
     System.out.println("&nbsp&nbsp&nbsp<A HREF=\"#up\">Up ramp trace</A><br>");
     System.out
@@ -690,11 +421,6 @@ public class ClientEmulator
         .println("<A HREF=\"perf.html\">Overall performance report</A><br>");
     System.out
         .println("<A HREF=\"stat_client0.html\">Main client (localhost) statistics</A><br>");
-    for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-      System.out.println("<A HREF=\"stat_client" + (i + 1)
-          + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
-          + ") statistics</A><br>");
-    System.out.println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
 
     System.out
         .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"perf.html#node\">Node information</A><br>");
@@ -708,16 +434,6 @@ public class ClientEmulator
         .println("&nbsp&nbsp&nbsp<A HREF=\"#down_stat\">Down ramp statistics</A><br>");
     System.out
         .println("&nbsp&nbsp&nbsp<A HREF=\"#all_stat\">Overall statistics</A><br>");
-    System.out
-        .println("&nbsp&nbsp&nbsp<A HREF=\"#cpu_graph\">CPU usage graphs</A><br>");
-    System.out
-        .println("&nbsp&nbsp&nbsp<A HREF=\"#procs_graph\">Processes usage graphs</A><br>");
-    System.out
-        .println("&nbsp&nbsp&nbsp<A HREF=\"#mem_graph\">Memory usage graph</A><br>");
-    System.out
-        .println("&nbsp&nbsp&nbsp<A HREF=\"#disk_graph\">Disk usage graphs</A><br>");
-    System.out
-        .println("&nbsp&nbsp&nbsp<A HREF=\"#net_graph\">Network usage graphs</A><br>");
 
     if (isMainClient)
     {
@@ -729,13 +445,6 @@ public class ClientEmulator
       System.out.println("<B>Web server</B><br>");
       client.printNodeInformation(client.rubis.getWebServerName());
 
-      // C-JDBC server
-      if (cjdbcFlag)
-      {
-        System.out.println("<br><B>C-JDBC server</B><br>");
-        client.printNodeInformation((String) client.rubis.getCJDBCServerName());
-      }
-
       // Database server
       System.out.println("<br><B>Database server</B><br>");
       client.printNodeInformation((String) client.rubis.getDBServerNames().get(
@@ -745,51 +454,13 @@ public class ClientEmulator
       System.out.println("<br><B>Local client</B><br>");
       client.printNodeInformation("localhost");
 
-      // Remote Clients
-      for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-      {
-        System.out.println("<br><B>Remote client " + i + "</B><br>");
-        client.printNodeInformation((String) client.rubis.getRemoteClients()
-            .get(i));
-      }
-
-      try
-      {
-        PrintStream outputStream = new PrintStream(new FileOutputStream(
-            reportDir + "db_graphs.html"));
-        System.setOut(outputStream);
-        System.setErr(outputStream);
-      }
-      catch (Exception ioe)
-      {
-        System.out.println("An error occured while creating file ("
-            + ioe.getMessage() + ")");
-      }
-
-      System.out
-          .println("<center><h2>*** Database servers graphs ***</h2></center><br>");
       System.out
           .println("<A HREF=\"perf.html\">Overall performance report</A><br>");
       System.out
           .println("<A HREF=\"stat_client0.html\">Main client (localhost) statistics</A><br>");
-      for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-        System.out.println("<A HREF=\"stat_client" + (i + 1)
-            + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
-            + ") statistics</A><br>");
-      System.out.println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
 
       System.out
           .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"#node\">Node information</A><br>");
-      System.out
-          .println("&nbsp&nbsp&nbsp<A HREF=\"#cpu_graph\">CPU usage graphs</A><br>");
-      System.out
-          .println("&nbsp&nbsp&nbsp<A HREF=\"#procs_graph\">Processes usage graphs</A><br>");
-      System.out
-          .println("&nbsp&nbsp&nbsp<A HREF=\"#mem_graph\">Memory usage graph</A><br>");
-      System.out
-          .println("&nbsp&nbsp&nbsp<A HREF=\"#disk_graph\">Disk usage graphs</A><br>");
-      System.out
-          .println("&nbsp&nbsp&nbsp<A HREF=\"#net_graph\">Network usage graphs</A><br>");
 
       System.out
           .println("<br><A NAME=\"node\"></A><h3>Node Information</h3><br>");
@@ -799,45 +470,6 @@ public class ClientEmulator
         client.printNodeInformation((String) client.rubis.getDBServerNames()
             .get(i));
       }
-
-      System.out.println("<br><A NAME=\"cpu_graph\"></A>");
-      System.out.println("<br><h3>CPU Usage graphs</h3><p>");
-      System.out.println("<IMG SRC=\"db_cpu_busy."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-      System.out.println("<IMG SRC=\"db_cpu_idle."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-      System.out.println("<IMG SRC=\"db_cpu_user_kernel."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-
-      System.out.println("<br><A NAME=\"procs_graph\"></A>");
-      System.out.println("<br><h3>Processes Usage graphs</h3><p>");
-      System.out.println("<IMG SRC=\"db_procs."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-      System.out.println("<IMG SRC=\"db_ctxtsw."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-
-      System.out.println("<br><A NAME=\"mem_graph\"></A>");
-      System.out.println("<br><h3>Memory Usage graphs</h3><p>");
-      System.out.println("<IMG SRC=\"db_mem_usage."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-      System.out.println("<IMG SRC=\"db_mem_cache."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-
-      System.out.println("<br><A NAME=\"disk_graph\"></A>");
-      System.out.println("<br><h3>Disk Usage graphs</h3><p>");
-      System.out.println("<IMG SRC=\"db_disk_rw_req."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-      System.out.println("<IMG SRC=\"db_disk_tps."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-
-      System.out.println("<br><A NAME=\"net_graph\"></A>");
-      System.out.println("<br><h3>Network Usage graphs</h3><p>");
-      System.out.println("<IMG SRC=\"db_net_rt_byt."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-      System.out.println("<IMG SRC=\"db_net_rt_pack."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-      System.out.println("<IMG SRC=\"db_socks."
-          + client.rubis.getGnuPlotTerminal() + "\">");
 
       try
       {
@@ -851,13 +483,6 @@ public class ClientEmulator
             .println("<A HREF=\"perf.html\">Overall performance report</A><br>");
         System.out
             .println("<A HREF=\"stat_client0.html\">Main client (localhost) statistics</A><br>");
-        for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-          System.out.println("<A HREF=\"stat_client" + (i + 1)
-              + ".html\">client1 (" + client.rubis.getRemoteClients().get(i)
-              + ") statistics</A><br>");
-
-        System.out
-            .println("<A HREF=\"db_graphs.html\">Database graphs</A><br>");
 
         System.out
             .println("<p><br>&nbsp&nbsp&nbsp<A HREF=\"perf.html#node\">Node information</A><br>");
@@ -871,16 +496,6 @@ public class ClientEmulator
             .println("&nbsp&nbsp&nbsp<A HREF=\"#down_stat\">Down ramp statistics</A><br>");
         System.out
             .println("&nbsp&nbsp&nbsp<A HREF=\"#all_stat\">Overall statistics</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#cpu_graph\">CPU usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#procs_graph\">Processes usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#mem_graph\">Memory usage graph</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#disk_graph\">Disk usage graphs</A><br>");
-        System.out
-            .println("&nbsp&nbsp&nbsp<A HREF=\"#net_graph\">Network usage graphs</A><br>");
       }
       catch (Exception ioe)
       {
@@ -929,271 +544,6 @@ public class ClientEmulator
     System.out.println("<br><A NAME=\"all_stat\"></A>");
     allStats.display_stats("Overall", TimeManagement.diffTimeInMs(upRampDate,
         endDownRampDate), false);
-
-    if (isMainClient)
-    {
-
-      try
-      {
-        // Wait for end of all monitors and remote clients
-        for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-        {
-          // The waitFor method only does not work: it hangs forever
-          if (remoteClientMonitor[i].exitValue() != 0)
-          {
-            remoteClientMonitor[i].waitFor();
-          }
-          if (remoteClient[i].exitValue() != 0)
-          {
-            remoteClient[i].waitFor();
-          }
-          // remoteClientMonitor[i].waitFor();
-          // remoteClient[i].waitFor();
-        }
-        if (webServerMonitor.exitValue() != 0)
-        {
-          webServerMonitor.waitFor();
-        }
-        if (cjdbcServerMonitor.exitValue() != 0)
-        {
-          cjdbcServerMonitor.waitFor();
-        }
-        for (int i = 0; i < dbServerMonitor.length; i++)
-          dbServerMonitor[i].waitFor();
-      }
-      catch (Exception e)
-      {
-        System.out
-            .println("An error occured while waiting for remote processes termination ("
-                + e.getMessage() + ")");
-      }
-
-      // Time to transfer (scp all the files over)
-      try
-      {
-        for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-        {
-          client.getMonitoredData((String) client.rubis.getRemoteClients().get(
-              i), tmpDir + "client" + (i + 1), reportDir);
-        }
-
-        for (int i = 0; i < dbServerMonitor.length; i++)
-        {
-          client.getMonitoredData((String) client.rubis.getDBServerNames().get(
-              i), tmpDir + "db_server" + i, reportDir);
-        }
-
-        // Web server
-        client.getMonitoredData(client.rubis.getWebServerName(), tmpDir
-            + "web_server", reportDir);
-
-        // Local client
-        client.getMonitoredData("localhost", tmpDir + "client0", reportDir);
-
-        // C-JDBC server
-        if (cjdbcFlag)
-        {
-          client.getMonitoredData(client.rubis.getCJDBCServerName(), tmpDir
-              + "cjdbc_server", reportDir);
-        }
-
-        // Now transfer the remote client html files
-        for (int i = 0; i < client.rubis.getRemoteClients().size(); i++)
-        {
-          client.getHTMLData((String) client.rubis.getRemoteClients().get(i),
-              tmpDir + "trace_client" + (i + 1) + ".html ", reportDir);
-          client.getHTMLData((String) client.rubis.getRemoteClients().get(i),
-              tmpDir + "stat_client" + (i + 1) + ".html ", reportDir);
-        }
-      }
-      catch (Exception e)
-      {
-        System.out.println("An error occured while transferring log files ("
-            + e.getMessage() + ")");
-      }
-
-      // Generate the graphics
-      try
-      {
-        String[] cmd = null;
-        cmd = new String[5];
-        cmd[0] = "bench/generate_graphs.sh";
-        cmd[1] = reportDir;
-        cmd[2] = client.rubis.getGnuPlotTerminal();
-        cmd[3] = Integer.toString(client.rubis.getRemoteClients().size() + 1);
-        cmd[4] = Integer.toString(client.rubis.getDBServerNames().size());
-        Process graph = Runtime.getRuntime().exec(cmd);
-        // Need to read input so program does not stall.
-        BufferedReader read = new BufferedReader(new InputStreamReader(graph
-            .getInputStream()));
-        String msg;
-        while ((msg = read.readLine()) != null)
-        {
-          // System.out.println(msg+"<br>");
-        }
-        read.close();
-        graph.waitFor();
-      }
-      catch (Exception e)
-      {
-        System.out.println("An error occured while generating the graphs ("
-            + e.getMessage() + ")");
-      }
-    }
-
-    System.out.println("<br><A NAME=\"cpu_graph\"></A>");
-    System.out.println("<br><h3>CPU Usage graphs</h3><p>");
-    System.out.println("<TABLE>");
-    System.out.println("<TR><TD><IMG SRC=\"cpu_busy."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_cpu_busy."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_cpu_busy."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("<TR><TD><IMG SRC=\"cpu_idle."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_cpu_idle."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_cpu_idle."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("<TR><TD><IMG SRC=\"cpu_user_kernel."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_cpu_user_kernel."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_cpu_user_kernel."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("</TABLE><p>");
-
-    System.out.println("<br><A NAME=\"procs_graph\"></A>");
-    System.out.println("<TABLE>");
-    System.out.println("<br><h3>Processes Usage graphs</h3><p>");
-    System.out.println("<TR><TD><IMG SRC=\"procs."
-        + client.rubis.getGnuPlotTerminal() + "\"><TD><IMG SRC=\"client_procs."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_procs."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("<TR><TD><IMG SRC=\"ctxtsw."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_ctxtsw."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_ctxtsw."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("</TABLE><p>");
-
-    System.out.println("<br><A NAME=\"mem_graph\"></A>");
-    System.out.println("<br><h3>Memory Usage graph</h3><p>");
-    System.out.println("<TABLE>");
-    System.out.println("<TR><TD><IMG SRC=\"mem_usage."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_mem_usage."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_mem_usage."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("<TR><TD><IMG SRC=\"mem_cache."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_mem_cache."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_mem_cache."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("</TABLE><p>");
-
-    System.out.println("<br><A NAME=\"disk_graph\"></A>");
-    System.out.println("<br><h3>Disk Usage graphs</h3><p>");
-    System.out.println("<TABLE>");
-    System.out.println("<TR><TD><IMG SRC=\"disk_rw_req."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_disk_rw_req."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_disk_rw_req."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("<TR><TD><IMG SRC=\"disk_tps."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_disk_tps."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_disk_tps."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("</TABLE><p>");
-
-    System.out.println("<br><A NAME=\"net_graph\"></A>");
-    System.out.println("<br><h3>Network Usage graphs</h3><p>");
-    System.out.println("<TABLE>");
-    System.out.println("<TR><TD><IMG SRC=\"net_rt_byt."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_net_rt_byt."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_net_rt_byt."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("<TR><TD><IMG SRC=\"net_rt_pack."
-        + client.rubis.getGnuPlotTerminal()
-        + "\"><TD><IMG SRC=\"client_net_rt_pack."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_net_rt_pack."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("<TR><TD><IMG SRC=\"socks."
-        + client.rubis.getGnuPlotTerminal() + "\"><TD><IMG SRC=\"client_socks."
-        + client.rubis.getGnuPlotTerminal() + "\">");
-    if (cjdbcFlag)
-    {
-      System.out.println("<TR><TD><IMG SRC=\"cjdbc_server_socks."
-          + client.rubis.getGnuPlotTerminal() + "\">");
-    }
-    System.out.println("</TABLE><p>");
-
-    if (isMainClient)
-    {
-      // Compute the global stats
-      try
-      {
-        String[] cmd = new String[6];
-        cmd[0] = "bench/compute_global_stats.awk";
-        cmd[1] = "-v";
-        cmd[2] = "path=" + reportDir;
-        cmd[3] = "-v";
-        cmd[4] = "nbscript="
-            + Integer.toString(client.rubis.getRemoteClients().size() + 1);
-        cmd[5] = reportDir + "stat_client0.html";
-        Process computeStats = Runtime.getRuntime().exec(cmd);
-        computeStats.waitFor();
-      }
-      catch (Exception e)
-      {
-        System.out.println("An error occured while generating the graphs ("
-            + e.getMessage() + ")");
-      }
-    }
 
     Runtime.getRuntime().exit(0);
   }

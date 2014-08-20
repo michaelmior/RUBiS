@@ -53,8 +53,6 @@ public class RUBiSProperties
   private String                useVersion;
 
   // Information about Workload
-  private Vector                remoteClients;
-  private String                remoteCommand;
   private int                   nbOfClients;
   private String                transitionTable;
   private int                   nbOfColumns;
@@ -94,12 +92,8 @@ public class RUBiSProperties
 
   // Monitoring information
   private Integer               monitoringDebug;
-  private String                monitoringProgram;
-  private String                monitoringOptions;
-  private Integer               monitoringSampling;
   private String                monitoringRsh;
   private String                monitoringScp;
-  private String                monitoringGnuPlot;
 
   /**
    * Creates a new <code>RUBiSProperties</code> instance. If the
@@ -192,22 +186,6 @@ public class RUBiSProperties
 
       // # Workload
       System.out.println("\n<h3><br>### Workload ###</h3>");
-      System.out.print("Remote client nodes            : ");
-      StringTokenizer nodes = new StringTokenizer(getProperty("workload_remote_client_nodes"),
-          ",");
-      remoteClients = new Vector(nodes.countTokens());
-      while (nodes.hasMoreTokens())
-      {
-        String name = nodes.nextToken().trim();
-        remoteClients.add(name);
-        System.out.print(name);
-        if (nodes.hasMoreTokens())
-          System.out.print(", ");
-      }
-      System.out.println("<br>");
-      System.out.print("Remote client command          : ");
-      remoteCommand = getProperty("workload_remote_client_command");
-      System.out.println(remoteCommand + "<br>");
       System.out.print("Number of clients              : ");
       foo = new Integer(getProperty("workload_number_of_clients_per_node"));
       nbOfClients = foo.intValue();
@@ -264,7 +242,7 @@ public class RUBiSProperties
       // # Database Information
       System.out.println("\n<h3><br>### Database Information ###</h3>");
       System.out.print("Database server                        : ");
-      nodes = new StringTokenizer(getProperty("database_server"), ",");
+      StringTokenizer nodes = new StringTokenizer(getProperty("database_server"), ",");
       dbServers = new Vector(nodes.countTokens());
       while (nodes.hasMoreTokens())
       {
@@ -384,25 +362,12 @@ public class RUBiSProperties
       System.out.print("Monitoring debugging level     : ");
       monitoringDebug = new Integer(getProperty("monitoring_debug_level"));
       System.out.println(monitoringDebug + "<br>");
-      System.out.print("Monitoring program             : ");
-      monitoringProgram = getProperty("monitoring_program");
-      System.out.println(monitoringProgram + "<br>");
-      System.out.print("Monitoring options             : ");
-      monitoringOptions = getProperty("monitoring_options");
-      System.out.println(monitoringOptions + "<br>");
-      System.out.print("Monitoring sampling in seconds : ");
-      monitoringSampling = new Integer(
-          getProperty("monitoring_sampling_in_seconds"));
-      System.out.println(monitoringSampling + "<br>");
       System.out.print("Monitoring rsh                 : ");
       monitoringRsh = getProperty("monitoring_rsh");
       System.out.println(monitoringRsh + "<br>");
       System.out.print("Monitoring scp                 : ");
       monitoringScp = getProperty("monitoring_scp");
       System.out.println(monitoringScp + "<br>");
-      System.out.print("Monitoring Gnuplot Terminal    : ");
-      monitoringGnuPlot = getProperty("monitoring_gnuplot_terminal");
-      System.out.println(monitoringGnuPlot + "<br>");
 
       // Create a new URLGenerator according to the version the user has chosen
       System.out.println("\n");
@@ -695,26 +660,6 @@ public class RUBiSProperties
   }
 
   /**
-   * Get a vector of remote node names to launch clients on
-   * 
-   * @return vector of remote node names to launch clients on
-   */
-  public Vector getRemoteClients()
-  {
-    return remoteClients;
-  }
-
-  /**
-   * Get a vector of remote node names to launch clients on
-   * 
-   * @return vector of remote node names to launch clients on
-   */
-  public String getClientsRemoteCommand()
-  {
-    return remoteCommand;
-  }
-
-  /**
    * Get the maximum number of transitions a client may perform
    * 
    * @return maximum number of transitions
@@ -792,37 +737,6 @@ public class RUBiSProperties
   }
 
   /**
-   * Get the monitoring program full path and name
-   * 
-   * @return monitoring program full path and name
-   */
-  public String getMonitoringProgram()
-  {
-    return monitoringProgram;
-  }
-
-  /**
-   * Get the monitoring program options
-   * 
-   * @return monitoring program options
-   */
-  public String getMonitoringOptions()
-  {
-    return monitoringOptions;
-  }
-
-  /**
-   * Get the interval of time in seconds between 2 sample collection by the
-   * monitoring program.
-   * 
-   * @return monitoring program sampling time in seconds
-   */
-  public Integer getMonitoringSampling()
-  {
-    return monitoringSampling;
-  }
-
-  /**
    * Get the rsh program path that should be used to run the monitoring program
    * remotely
    * 
@@ -842,15 +756,4 @@ public class RUBiSProperties
   {
     return monitoringScp;
   }
-
-  /**
-   * Get the terminal to use for gnuplot. Usually it is set to 'gif' or 'jpeg'.
-   * 
-   * @return gnuplot terminal
-   */
-  public String getGnuPlotTerminal()
-  {
-    return monitoringGnuPlot;
-  }
-
 }
