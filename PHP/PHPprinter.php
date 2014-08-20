@@ -13,7 +13,7 @@ class ColumnFamilies {
 
   public function __construct($pool) {
     $this->pool = $pool;
-    $this->cfs = [];
+    $this->cfs = array();
   }
 
   public function __isset($offset) {
