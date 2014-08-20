@@ -49,7 +49,7 @@
 
     if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
-            $slice = new ColumnSlice(array('2002-04-'), array('2002-05-'), $count=($page + 1) * $nbOfItems);
+            $slice = new ColumnSlice(array('2002-04-'), array('2002-05-'), $count=($page + 1) * $nbOfItems * 4);
             $cf = $link->zg8gDr5;
             $cf->return_format = ColumnFamily::ARRAY_FORMAT;
             $itemResults = $cf->get($categoryId, $slice);
