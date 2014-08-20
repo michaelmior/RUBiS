@@ -35,7 +35,7 @@ class ColumnFamilies {
 
 abstract class SchemaType {
     const RELATIONAL = 1;
-    const UNCONSTRAINED = 1;
+    const UNCONSTRAINED = 2;
 }
 
 $CURRENT_SCHEMA = SchemaType::UNCONSTRAINED;
