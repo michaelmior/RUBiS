@@ -36,9 +36,10 @@ class ColumnFamilies {
 abstract class SchemaType {
     const RELATIONAL = 1;
     const UNCONSTRAINED = 2;
+    const HALF = 3;
 }
 
-$CURRENT_SCHEMA = SchemaType::UNCONSTRAINED;
+$CURRENT_SCHEMA = SchemaType::HALF;
 
 function getDatabaseLink(&$link)
 {

@@ -63,6 +63,28 @@
                         break;
                     }
                 }
+            } elseif ($CURRENT_SCHEMA >= SchemaType::HALF) {
+                $cf = $link->__get('lkQoYGr');
+                $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+
+                $bids = array();
+                foreach ($cf->get($itemId) as $bid) {
+                    $id = $bid[0][0];
+                    if (!isset($bids[$id])) {
+                        $bids[$id] = array();
+                    }
+                    $bids[$id][$bid[0][1]] = $bid[1];
+                }
+                uasort($bids, function($bida, $bidb) { return $bidb["bid"] - $bida["bid"]; });
+
+                $nb = 0;
+                foreach ($bids as $bid) {
+                    $nb += $bid["qty"];
+                    if ($nb > $row["quantity"]) {
+                        $maxBid = $row["bid"];
+                        break;
+                    }
+                }
             } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
                 // Fetch bids, sort, and take the top "quantity" number
                 $bid_ids = array_keys($link->bid_item->get($itemId));
