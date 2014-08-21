@@ -33,28 +33,33 @@
 
     // Get the list of bids for this item
     if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+        try {
         $cf = $link->qz7kz2;
         $cf->return_format = ColumnFamily::ARRAY_FORMAT;
 
         $bidsListResult = array();
         $bids = array();
-        foreach ($cf->get($itemId) as $bid) {
-            $id = $bid[0][1];
-            if (!isset($bids[$id])) {
-                $bids[$id] = array("date" => $bid[0][0]);
+            foreach ($cf->get($itemId) as $bid) {
+                $id = $bid[0][1];
+                if (!isset($bids[$id])) {
+                    $bids[$id] = array("date" => $bid[0][0]);
+                }
+                $bids[$id][$bid[0][2]] = $bid[1];
             }
-            $bids[$id][$bid[0][2]] = $bid[1];
-        }
-        foreach ($bids as $id => $bid) {
-            $bidsListResult[] = array_merge(array("id" => $id), $bid);
-        }
+            foreach ($bids as $id => $bid) {
+                $bidsListResult[] = array_merge(array("id" => $id), $bid);
+            }
 
-        // Collect usernames
-        $cf = $link->zmLEBQZ;
-        $cf->return_format = ColumnFamily::ARRAY_FORMAT;
-        $usersResult = array();
-        foreach ($cf->get($itemId) as $user) {
-            $usersResult[$user[0][0]] = $user[1];
+            // Collect usernames
+            $cf = $link->zmLEBQZ;
+            $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+            $usersResult = array();
+            foreach ($cf->get($itemId) as $user) {
+                $usersResult[$user[0][0]] = $user[1];
+            }
+        } catch (cassandra\NotFoundException $e) {
+            print ("<h2>There is no bid for $itemName. </h2><br>");
+            $bidsListResult = array();
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
