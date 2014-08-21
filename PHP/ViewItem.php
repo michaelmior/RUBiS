@@ -33,7 +33,8 @@
         $cf = $link->mYK14vA;
         $cf->return_format = ColumnFamily::ARRAY_FORMAT;
         $slice = new ColumnSlice('', '', $count=1, $reversed=true);
-        $maxBid = intval($cf->get($itemId, $slice)[0][0][0]);
+        $maxBid = intval($cf->get($itemId, $slice));
+        $maxBid = $maxBid[0][0][0];
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $bid_ids = array_keys($link->bid_item->get($itemId));
