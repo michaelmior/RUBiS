@@ -777,7 +777,7 @@ public class UserSession extends Thread
         lastURL = computeURLFromState(next);
         time = System.currentTimeMillis();
         lastHTMLReply = callHTTPServer(lastURL);
-        stats.updateTime(next, System.currentTimeMillis() - time);
+        if (stats != null) { stats.updateTime(next, System.currentTimeMillis() - time); }
         if (lastHTMLReply == null)
         {
           if (debugLevel > 0)
@@ -793,7 +793,7 @@ public class UserSession extends Thread
           if (debugLevel > 0)
             System.out.println("Thread " + this.getName()
                 + ": Error returned from access to " + lastURL + "<br>");
-          stats.incrementError(next);
+          if (stats != null) { stats.incrementError(next); }
           if (debugLevel > 1)
             System.out.println("Thread " + this.getName()
                 + ": HTML reply was: " + lastHTMLReply + "<br>");
@@ -811,7 +811,7 @@ public class UserSession extends Thread
               + username + " successfully ended<br>");
         endSession = System.currentTimeMillis();
         long sessionTime = endSession - startSession;
-        stats.addSessionTime(sessionTime);
+        if (stats != null) { stats.addSessionTime(sessionTime); }
       }
       else
       {

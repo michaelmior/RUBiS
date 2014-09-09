@@ -137,7 +137,7 @@ public class TransitionTable
   public void resetToInitialState()
   {
     currentState = 0;
-    stats.incrementCount(currentState);
+    if (stats != null) { stats.incrementCount(currentState); }
   }
 
   /**
@@ -245,7 +245,7 @@ public class TransitionTable
       { // Back adds both stats of back and new state but only sleep "back
         // waiting time"
         // and return the new state (after back).
-        stats.incrementCount(currentState); // Add back state stat
+        if (stats != null) { stats.incrementCount(currentState); } // Add back state stat
         try
         {
           if (useTPCWThinkTime)
@@ -267,7 +267,7 @@ public class TransitionTable
         // System.out.println("Thread "+Thread.currentThread().getName()+":
         // Going back from "+stateNames[beforeStep]+" to
         // "+stateNames[currentState]+"<br>\n");
-        stats.incrementCount(currentState); // Add new state stat
+        if (stats != null) { stats.incrementCount(currentState); } // Add new state stat
         return currentState;
       }
     }
@@ -286,7 +286,7 @@ public class TransitionTable
         // "+stateNames[beforeStep]+" -> "+stateNames[currentState]+"<br>\n");
       }
     }
-    stats.incrementCount(currentState);
+    if (stats != null) { stats.incrementCount(currentState); }
     try
     {
       if (useTPCWThinkTime)

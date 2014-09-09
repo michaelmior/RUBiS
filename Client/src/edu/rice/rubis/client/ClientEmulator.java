@@ -58,7 +58,7 @@ public class ClientEmulator
   // URL generator corresponding to the version to be used (PHP)
   private static float    slowdownFactor  = 0;
 
-  private static boolean  endOfSimulation = false;
+  private static volatile boolean  endOfSimulation = false;
 
   /**
    * Creates a new <code>ClientEmulator</code> instance. The program is
@@ -85,7 +85,7 @@ public class ClientEmulator
    * 
    * @param newValue new slowdown value
    */
-  private synchronized void setSlowDownFactor(float newValue)
+  private void setSlowDownFactor(float newValue)
   {
     slowdownFactor = newValue;
   }
@@ -96,7 +96,7 @@ public class ClientEmulator
    * 
    * @return slowdown factor of current ramp
    */
-  public static synchronized float getSlowDownFactor()
+  public static float getSlowDownFactor()
   {
     return slowdownFactor;
   }
@@ -104,7 +104,7 @@ public class ClientEmulator
   /**
    * Set the end of the current simulation
    */
-  private synchronized void setEndOfSimulation()
+  private void setEndOfSimulation()
   {
     endOfSimulation = true;
   }
@@ -114,7 +114,7 @@ public class ClientEmulator
    * 
    * @return true if end of simulation
    */
-  public static synchronized boolean isEndOfSimulation()
+  public static boolean isEndOfSimulation()
   {
     return endOfSimulation;
   }
