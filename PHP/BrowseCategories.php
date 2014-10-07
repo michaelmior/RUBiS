@@ -2,6 +2,8 @@
 <html>
   <body>
     <?php
+use phpcassa\ColumnFamily;
+
     $scriptName = "BrowseCategories.php";
     require "PHPprinter.php";
     $startTime = getMicroTime();
@@ -24,11 +26,23 @@
 
     printHTMLheader("RUBiS available categories");
 
-    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+    // Q: SELECT id, name FROM categories WHERE categories.dummy = 1
+    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+      $cf = $link->I3208103476;
+      $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+      $categories = array();
+      foreach ($cf->get(1) as $row) {
+        $categories[$row[0][0]] = array("id" => $row[0][0], "name" => $row[1]);
+      }
+    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
       $categories = $link->categories->get_range();
-      if (!!current($categories))
+      if (!!current($categories)) {
+        $categories = array();
+      }
+    }
+    if (empty($categories)) {
         print("<h2>Sorry, but there is no category available at this time. Database table is empty</h2><br>\n");
-      else
+    } else {
         print("<h2>Currently available categories</h2><br>\n");
 
       foreach ($categories as $id => $row) {
