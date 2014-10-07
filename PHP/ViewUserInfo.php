@@ -50,8 +50,9 @@
     print("Current rating : <b>".$rating."</b><br>");
 
     // Get the comments about the user
+    // Q: SELECT id, to_user_id, item_id, rating, date, comment FROM comments WHERE comments.to_user_id = ?
     if ($CURRENT_SCHEMA == SchemaType::UNCONSTRAINED) {
-        $cf = $link->gZr0MkZ;
+        $cf = $link->I2607716123;
         $cf->return_format = ColumnFamily::ARRAY_FORMAT;
         $comments = array();
         foreach ($cf->get($userId) as $comment) {
@@ -81,7 +82,15 @@
     foreach ($commentsResult as $commentsRow) {
         $authorId = $commentsRow["from_user_id"];
 
-        if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+        // Q: SELECT id, nickname FROM users WHERE users.id = ?
+        if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+            try {
+                $authorRow = $link->users->get($authorId, $column_slice=null, $column_names=array("nickname"));
+                $authorRow = array("nickname" => array_values($link->I3318501374->get($authorId))[0]);
+            } catch (cassandra\NotFoundException $e) {
+                $authorRow = null;
+            }
+        } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
             try {
                 $authorRow = $link->users->get($authorId, $column_slice=null, $column_names=array("nickname"));
             } catch (cassandra\NotFoundException $e) {

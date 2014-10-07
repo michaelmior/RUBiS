@@ -47,10 +47,11 @@
     getDatabaseLink($link);
     $found = true;
 
+    // Q: SELECT id, name, initial_price, max_bid, nb_of_bids, end_date FROM items WHERE items.category = ? AND items.end_date >= ?
     if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
             $slice = new ColumnSlice(array('2002-04-'), array('2002-05-'), $count=($page + 1) * $nbOfItems * 4);
-            $cf = $link->zg8gDr5;
+            $cf = $link->I326822658;
             $cf->return_format = ColumnFamily::ARRAY_FORMAT;
             $itemResults = $cf->get($categoryId, $slice);
             $items = array();
