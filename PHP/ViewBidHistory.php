@@ -17,7 +17,18 @@
     getDatabaseLink($link);
 
     // Get the item name
-    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+    // Q: SELECT name FROM items WHERE items.id = ?
+    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+        try {
+            $itemName = array_values($link->I1123555240->get($itemId))[0];
+        } catch (cassandra\NotFoundException $e) {
+            try {
+                $itemName = array_values($link->I862781479->get($itemId))[0];
+            } catch (cassandra\NotFoundException $e) {
+                die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
+            }
+        }
+    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $itemNameRow = $link->items->get($itemId, $column_slice=null, $column_names=array("name"));
         } catch (cassandra\NotFoundException $e) {
@@ -32,9 +43,10 @@
 
 
     // Get the list of bids for this item
+    // Q: SELECT id, user_id, item_id, qty, bid, date FROM bids WHERE bids.item_id = ? ORDER BY bids.date
     if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
-        $cf = $link->qz7kz2;
+        $cf = $link->I1757158466;
         $cf->return_format = ColumnFamily::ARRAY_FORMAT;
 
         $bidsListResult = array();
@@ -51,7 +63,7 @@
             }
 
             // Collect usernames
-            $cf = $link->zmLEBQZ;
+            $cf = $link->I1012998599;
             $cf->return_format = ColumnFamily::ARRAY_FORMAT;
             $usersResult = array();
             foreach ($cf->get($itemId) as $user) {
@@ -83,6 +95,7 @@
         $bidDate = $bidsListRow["date"];
         $userId = $bidsListRow["user_id"];
         // Get the bidder nickname
+        // Q: SELECT id, nickname FROM users WHERE users.bids.item_id = ?
         if ($userId != 0) {
             if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
                 $nickname = $usersResult[$userId];
