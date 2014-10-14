@@ -19,7 +19,7 @@
 
     // Q: SELECT name FROM items WHERE items.id = ?
     // Q: SELECT name FROM olditems WHERE olditems.id = ?
-    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+    if ($CURRENT_SCHEMA <= SchemaType::HALF) {
         try {
             $cf = $link->I2115247770;
             $cf->return_format = ColumnFamily::ARRAY_FORMAT;
@@ -37,7 +37,7 @@
                 die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
             }
         }
-    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+    } elseif ($CURRENT_SCHEMA <= SchemaType::RELATIONAL) {
         try {
             $row = $link->items->get($itemId);
         } catch (cassandra\NotFoundException $e) {
@@ -50,7 +50,16 @@
     }
 
     // Q: SELECT bid FROM bids WHERE bids.item_id = ? ORDER BY bids.bid LIMIT 1
-    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+    if ($CURRENT_SCHEMA >= SchemaType::HALF) {
+        $cf = $link->I2589792665;
+        $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+        $maxBid = 0;
+        foreach ($cf->get($itemId) as $bid) {
+            if (strcmp($bid[0][1], 'bid') === 0) {
+              $maxBid = max($maxBid, intval($bid[1]));
+            }
+        }
+    } elseif ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
             $cf = $link->I2744950719;
             $cf->return_format = ColumnFamily::ARRAY_FORMAT;
@@ -91,7 +100,7 @@
                     }
                 }
             } elseif ($CURRENT_SCHEMA >= SchemaType::HALF) {
-                $cf = $link->__get('lkQoYGr');
+                $cf = $link->I2589792665;
                 $cf->return_format = ColumnFamily::ARRAY_FORMAT;
 
                 $bids = array();
@@ -108,7 +117,7 @@
                 foreach ($bids as $bid) {
                     $nb += $bid["qty"];
                     if ($nb > $row["quantity"]) {
-                        $maxBid = $row["bid"];
+                        $maxBid = $row["max_bid"];
                         break;
                     }
                 }
@@ -139,6 +148,8 @@
         // Q: SELECT id FROM bids WHERE bids.item_id = ?
         if ($CURRENT_SCHEMA == SchemaType::UNCONSTRAINED) {
             $nbOfBids = $link->I4004689239->get_count($itemId);
+        } elseif ($CURRENT_SCHEMA >= SchemaType::HALF) {
+            $nbOfBids = $link->I2589792665->get_count($itemId);
         } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
             $nbOfBids = $link->bid_item->get_count($itemId);
         }
@@ -159,9 +170,11 @@
         }
     }
 
-    if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+    if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
         $sellerNameRow = $link->users->get($row["seller"], $column_slice=null, $column_names=array("nickname"));
         $sellerName = $sellerNameRow["nickname"];
+    } else {
+        $sellerName = array_values($link->I3318501374->get($row["seller"]))[0];
     }
 
     print("<TR><TD>Quantity<TD><b><BIG>".$row["quantity"]."</BIG></b>\n");
