@@ -85,7 +85,7 @@
         // Q: SELECT id, nickname FROM users WHERE users.id = ?
         if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
             try {
-                $authorRow = $link->users->get($authorId, $column_slice=null, $column_names=array("nickname"));
+                $authorRow = $link->I3318501374->get($authorId);
                 $authorRow = array("nickname" => array_values($link->I3318501374->get($authorId))[0]);
             } catch (cassandra\NotFoundException $e) {
                 $authorRow = null;
