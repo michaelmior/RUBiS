@@ -17,13 +17,13 @@ with open(args.json_name, 'r') as json_file:
 
 for index in output['indexes']:
     if len(index['path']) > 1:
-        hash_fields = ','.join([field.replace('.', '_') for field in index['hash_fields']])
-        order_fields = ','.join([field.replace('.', '_') for field in index['order_fields']])
-        extra = ','.join([field.replace('.', '_') for field in index['extra']])
+        hash_fields = ','.join([field['parent'] + '_' + field['name'] for field in index['hash_fields']])
+        order_fields = ','.join([field['parent'] + '_' + field['name'] for field in index['order_fields']])
+        extra = ','.join([field['parent'] + '_' + field['name'] for field in index['extra']])
     else:
-        hash_fields = ','.join([field.split('.')[-1] for field in index['hash_fields']])
-        order_fields = ','.join([field.split('.')[-1] for field in index['order_fields']])
-        extra = ','.join([field.split('.')[-1] for field in index['extra']])
+        hash_fields = ','.join([field['name'] for field in index['hash_fields']])
+        order_fields = ','.join([field['name'] for field in index['order_fields']])
+        extra = ','.join([field['name'] for field in index['extra']])
 
     csv_name = '_'.join(index['path'])
     key = index['key']

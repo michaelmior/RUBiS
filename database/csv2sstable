@@ -84,7 +84,7 @@ with open(os.path.join('csv', args.csv_name), 'r') as csv_file:
                 value = row[-1]
                 row_dict['columns'].append((
                     column_key,            # Composite key
-                    encode(value),         # Extra value
+                    value,                 # Extra value
                     int(time.time() * 1e6) # Timestamp in nanoseconds
                 ))
             else:
