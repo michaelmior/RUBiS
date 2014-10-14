@@ -19,7 +19,7 @@
 
     // Q: SELECT name FROM items WHERE items.id = ?
     // Q: SELECT name FROM olditems WHERE olditems.id = ?
-    if ($CURRENT_SCHEMA <= SchemaType::HALF) {
+    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
             $cf = $link->I2115247770;
             $cf->return_format = ColumnFamily::ARRAY_FORMAT;
@@ -37,7 +37,7 @@
                 die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
             }
         }
-    } elseif ($CURRENT_SCHEMA <= SchemaType::RELATIONAL) {
+    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $row = $link->items->get($itemId);
         } catch (cassandra\NotFoundException $e) {

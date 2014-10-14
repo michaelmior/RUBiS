@@ -48,7 +48,7 @@
     $found = true;
 
     // Q: SELECT id, name, initial_price, max_bid, nb_of_bids, end_date FROM items WHERE items.category = ? AND items.end_date >= ?
-    if ($CURRENT_SCHEMA <= SchemaType::HALF) {
+    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
             $slice = new ColumnSlice(array('2002-04-'), array('2002-05-'), $count=($page + 1) * $nbOfItems * 4);
             $cf = $link->I326822658;
@@ -66,7 +66,7 @@
         } catch (cassandra\NotFoundException $e) {
             $found = false;
         }
-    } elseif ($CURRENT_SCHEMA <= SchemaType::RELATIONAL) {
+    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $slice = new ColumnSlice('', '', $count=($page + 1) * $nbOfItems);
             $item_ids = array_keys($link->category_id->get($categoryId, $slice));
