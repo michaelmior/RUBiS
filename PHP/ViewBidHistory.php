@@ -18,7 +18,31 @@
 
     // Get the item name
     // Q: SELECT name FROM items WHERE items.id = ?
-    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+    if ($CURRENT_SCHEMA >= SchemaType::HALF) {
+        try {
+            $cf = $link->I2115247770;
+            $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+            foreach ($cf->get($itemId) as $data) {
+                if (strcmp($data[0][1], 'name') === 0) {
+                    $itemName = $data[1];
+                    break;
+                }
+            }
+        } catch (cassandra\NotFoundException $e) {
+            try {
+                $cf = $link->I810361528;
+                $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+                foreach ($cf->get($itemId) as $data) {
+                    if (strcmp($data[0][1], name) === 0) {
+                        $itemName = $data[1];
+                        break;
+                    }
+                }
+            } catch (cassandra\NotFoundException $e) {
+                die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
+            }
+        }
+    } elseif ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
             $itemName = array_values($link->I1123555240->get($itemId))[0];
         } catch (cassandra\NotFoundException $e) {
@@ -44,7 +68,42 @@
 
     // Get the list of bids for this item
     // Q: SELECT id, user_id, item_id, qty, bid, date FROM bids WHERE bids.item_id = ? ORDER BY bids.date
-    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+    if ($CURRENT_SCHEMA >= SchemaType::HALF) {
+        try {
+            $cf = $link->I2589792665;
+            $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+
+            $bids = array();
+            foreach ($cf->get($itemId) as $bid) {
+                $id = $bid[0][0];
+                if (!isset($bids[$id])) {
+                    $bids[$id] = array();
+                }
+                $bids[$id][$bid[0][1]] = $bid[1];
+            }
+            foreach ($bids as $id => $bid) {
+                $bidsListResult[] = array_merge(array("id" => $id), $bid);
+            }
+            uasort($bids, function($bida, $bidb) { return $bidb["bid"] - $bida["bid"]; });
+
+            // Collect usernames
+            $cf = $link->I1792628276;
+            $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+            $userIds = array();
+            foreach ($cf->get($itemId) as $user) {
+                $userIds[] = $user[1];
+            }
+
+            $users = array_values($link->I3318501374->multiget($userIds));
+            $usersResult = array();
+            foreach ($users as $user) {
+                $usersResult = $usersResult + $user;
+            }
+        } catch (cassandra\NotFoundException $e) {
+            print ("<h2>There is no bid for $itemName. </h2><br>");
+            $bidsListResult = array();
+        }
+    } elseif ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
         $cf = $link->I1757158466;
         $cf->return_format = ColumnFamily::ARRAY_FORMAT;
