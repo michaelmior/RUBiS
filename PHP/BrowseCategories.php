@@ -27,14 +27,21 @@ use phpcassa\ColumnFamily;
     printHTMLheader("RUBiS available categories");
 
     // Q: SELECT id, name FROM categories WHERE categories.dummy = 1
-    if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+    if ($CURRENT_SCHEMA <= SchemaType::UNCONSTRAINED) {
       $cf = $link->I3208103476;
       $cf->return_format = ColumnFamily::ARRAY_FORMAT;
       $categories = array();
       foreach ($cf->get(1) as $row) {
         $categories[$row[0][0]] = array("id" => $row[0][0], "name" => $row[1]);
       }
-    } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+    } elseif ($CURRENT_SCHEMA <= SchemaType::HALF) {
+      $cf = $link->I3858759750;
+      $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+      $categories = array();
+      foreach ($cf->get(1) as $row) {
+        $categories[$row[0][0]] = array("id" => $row[0][0], "name" => $row[1]);
+      }
+    } elseif ($CURRENT_SCHEMA <= SchemaType::RELATIONAL) {
       $categories = $link->categories->get_range();
       if (!!current($categories)) {
         $categories = array();
