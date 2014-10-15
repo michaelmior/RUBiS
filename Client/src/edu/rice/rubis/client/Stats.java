@@ -24,6 +24,9 @@
 
 package edu.rice.rubis.client;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * This class provides thread-safe statistics. Each statistic entry is composed
  * as follow:
@@ -44,13 +47,13 @@ package edu.rice.rubis.client;
 public class Stats
 {
   private int  nbOfStats;
-  private int  count[];
-  private int  error[];
-  private long minTime[];
-  private long maxTime[];
-  private long totalTime[];
-  private int  nbSessions;  // Number of sessions succesfully ended
-  private long sessionsTime; // Sessions total duration
+  private AtomicInteger count[];
+  private AtomicInteger  error[];
+  private AtomicLong minTime[];
+  private AtomicLong maxTime[];
+  private AtomicLong totalTime[];
+  private AtomicInteger nbSessions;  // Number of sessions succesfully ended
+  private AtomicLong sessionsTime; // Sessions total duration
 
   /**
    * Creates a new <code>Stats</code> instance. The entries are reset to 0.
@@ -60,11 +63,20 @@ public class Stats
   public Stats(int NbOfStats)
   {
     nbOfStats = NbOfStats;
-    count = new int[nbOfStats];
-    error = new int[nbOfStats];
-    minTime = new long[nbOfStats];
-    maxTime = new long[nbOfStats];
-    totalTime = new long[nbOfStats];
+
+    count = new AtomicInteger[nbOfStats];
+    error = new AtomicInteger[nbOfStats];
+    minTime = new AtomicLong[nbOfStats];
+    maxTime = new AtomicLong[nbOfStats];
+    totalTime = new AtomicLong[nbOfStats];
+    for (int i=0; i <= nbOfStats; i++) {
+        count[i] = new AtomicInteger();
+        error[i] = new AtomicInteger();
+        minTime[i] = new AtomicLong();
+        maxTime[i] = new AtomicLong();
+        totalTime[i] = new AtomicLong();
+    }
+
     reset();
   }
 
@@ -77,14 +89,14 @@ public class Stats
 
     for (i = 0; i < nbOfStats; i++)
     {
-      count[i] = 0;
-      error[i] = 0;
-      minTime[i] = Long.MAX_VALUE;
-      maxTime[i] = 0;
-      totalTime[i] = 0;
+      count[i] = new AtomicInteger();
+      error[i] = new AtomicInteger();
+      minTime[i] = new AtomicLong(Long.MAX_VALUE);
+      maxTime[i] = new AtomicLong();
+      totalTime[i] =new AtomicLong();
     }
-    nbSessions = 0;
-    sessionsTime = 0;
+    nbSessions = new AtomicInteger();
+    sessionsTime = new AtomicLong();
   }
 
   /**
@@ -93,24 +105,24 @@ public class Stats
    * 
    * @param time duration of the session
    */
-  public synchronized void addSessionTime(long time)
+  public void addSessionTime(long time)
   {
-    nbSessions++;
+    nbSessions.incrementAndGet();
     if (time < 0)
     {
       System.err.println("Negative time received in Stats.addSessionTime("
           + time + ")<br>\n");
       return;
     }
-    sessionsTime = sessionsTime + time;
+    sessionsTime.addAndGet(time);
   }
 
   /**
    * Increment the number of succesfully ended sessions.
    */
-  public synchronized void addSession()
+  public void addSession()
   {
-    nbSessions++;
+    nbSessions.incrementAndGet();
   }
 
   /**
@@ -118,9 +130,9 @@ public class Stats
    * 
    * @param index index of the entry
    */
-  public synchronized void incrementCount(int index)
+  public void incrementCount(int index)
   {
-    count[index]++;
+    count[index].incrementAndGet();
   }
 
   /**
@@ -128,9 +140,9 @@ public class Stats
    * 
    * @param index index of the entry
    */
-  public synchronized void incrementError(int index)
+  public void incrementError(int index)
   {
-    error[index]++;
+    error[index].incrementAndGet();
   }
 
   /**
@@ -140,7 +152,7 @@ public class Stats
    * @param index index of the entry
    * @param time time to add to this entry
    */
-  public synchronized void updateTime(int index, long time)
+  public void updateTime(int index, long time)
   {
     if (time < 0)
     {
@@ -148,11 +160,17 @@ public class Stats
           + ")<br>\n");
       return;
     }
-    totalTime[index] += time;
-    if (time > maxTime[index])
-      maxTime[index] = time;
-    if (time < minTime[index])
-      minTime[index] = time;
+    totalTime[index].addAndGet(time);
+
+    long extremeTime;
+
+    extremeTime = maxTime[index].get();
+    if (time > extremeTime)
+      maxTime[index].compareAndSet(extremeTime, time);
+
+    extremeTime = minTime[index].get();
+    if (time < extremeTime)
+        minTime[index].compareAndSet(extremeTime, time);
   }
 
   /**
@@ -161,9 +179,9 @@ public class Stats
    * @param index index of the entry
    * @return entry count value
    */
-  public synchronized int getCount(int index)
+  public int getCount(int index)
   {
-    return count[index];
+    return count[index].get();
   }
 
   /**
@@ -172,9 +190,9 @@ public class Stats
    * @param index index of the entry
    * @return entry error value
    */
-  public synchronized int getError(int index)
+  public int getError(int index)
   {
-    return error[index];
+    return error[index].get();
   }
 
   /**
@@ -183,9 +201,9 @@ public class Stats
    * @param index index of the entry
    * @return entry minimum time
    */
-  public synchronized long getMinTime(int index)
+  public long getMinTime(int index)
   {
-    return minTime[index];
+    return minTime[index].get();
   }
 
   /**
@@ -194,9 +212,9 @@ public class Stats
    * @param index index of the entry
    * @return entry maximum time
    */
-  public synchronized long getMaxTime(int index)
+  public long getMaxTime(int index)
   {
-    return maxTime[index];
+    return maxTime[index].get();
   }
 
   /**
@@ -205,9 +223,9 @@ public class Stats
    * @param index index of the entry
    * @return entry total time
    */
-  public synchronized long getTotalTime(int index)
+  public long getTotalTime(int index)
   {
-    return totalTime[index];
+    return totalTime[index].get();
   }
 
   /**
@@ -239,16 +257,16 @@ public class Stats
     }
     for (int i = 0; i < nbOfStats; i++)
     {
-      count[i] += anotherStat.getCount(i);
-      error[i] += anotherStat.getError(i);
-      if (minTime[i] > anotherStat.getMinTime(i))
-        minTime[i] = anotherStat.getMinTime(i);
-      if (maxTime[i] < anotherStat.getMaxTime(i))
-        maxTime[i] = anotherStat.getMaxTime(i);
-      totalTime[i] += anotherStat.getTotalTime(i);
+      count[i].set(count[i].get() + anotherStat.getCount(i));
+      error[i].set(error[i].get() + anotherStat.getError(i));
+      if (minTime[i].get() > anotherStat.getMinTime(i))
+        minTime[i].set(anotherStat.getMinTime(i));
+      if (maxTime[i].get() < anotherStat.getMaxTime(i))
+        maxTime[i].set(anotherStat.getMaxTime(i));
+      totalTime[i].addAndGet(anotherStat.getTotalTime(i));
     }
-    nbSessions += anotherStat.nbSessions;
-    sessionsTime += anotherStat.sessionsTime;
+    nbSessions.addAndGet(anotherStat.nbSessions.get());
+    sessionsTime.addAndGet(anotherStat.sessionsTime.get());
   }
 
   /**
@@ -273,36 +291,36 @@ public class Stats
     // Display stat for each state
     for (int i = 0; i < getNbOfStats(); i++)
     {
-      counts += count[i];
-      errors += error[i];
-      time += totalTime[i];
+      counts += count[i].get();
+      errors += error[i].get();
+      time += totalTime[i].get();
     }
 
     for (int i = 0; i < getNbOfStats(); i++)
     {
-      if ((exclude0Stat && count[i] != 0) || (!exclude0Stat))
+      if ((exclude0Stat && count[i].get() != 0) || (!exclude0Stat))
       {
         System.out.print("<TR><TD><div align=left>"
             + TransitionTable.getStateName(i) + "</div><TD><div align=right>");
-        if ((counts > 0) && (count[i] > 0))
-          System.out.print(100 * count[i] / counts + " %");
+        if ((counts > 0) && (count[i].get() > 0))
+          System.out.print(100 * count[i].get() / counts + " %");
         else
           System.out.print("0 %");
-        System.out.print("</div><TD><div align=right>" + count[i]
+        System.out.print("</div><TD><div align=right>" + count[i].get()
             + "</div><TD><div align=right>");
-        if (error[i] > 0)
-          System.out.print("<B>" + error[i] + "</B>");
+        if (error[i].get() > 0)
+          System.out.print("<B>" + error[i].get() + "</B>");
         else
           System.out.print(error[i]);
         System.out.print("</div><TD><div align=right>");
-        if (minTime[i] != Long.MAX_VALUE)
-          System.out.print(minTime[i]);
+        if (minTime[i].get() != Long.MAX_VALUE)
+          System.out.print(minTime[i].get());
         else
           System.out.print("0");
-        System.out.print(" ms</div><TD><div align=right>" + maxTime[i]
+        System.out.print(" ms</div><TD><div align=right>" + maxTime[i].get()
             + " ms</div><TD><div align=right>");
-        if (count[i] != 0)
-          System.out.println(totalTime[i] / count[i] + " ms</div>");
+        if (count[i].get() != 0)
+          System.out.println(totalTime[i].get() / count[i].get() + " ms</div>");
         else
           System.out.println("0 ms</div>");
       }
@@ -325,14 +343,14 @@ public class Stats
               + 1000 * counts / sessionTime + " req/s</B></div>");
       System.out
           .println("<TR><TD><div align=left>Completed sessions</div><TD colspan=6><div align=left>"
-              + nbSessions + "</div>");
+              + nbSessions.get() + "</div>");
       System.out
           .println("<TR><TD><div align=left>Total time</div><TD colspan=6><div align=left>"
-              + sessionsTime / 1000L + " seconds</div>");
+              + sessionsTime.get() / 1000L + " seconds</div>");
       System.out
           .print("<TR><TD><div align=left><B>Average session time</div></B><TD colspan=6><div align=left><B>");
-      if (nbSessions > 0)
-        System.out.print(sessionsTime / (long) nbSessions / 1000L + " seconds");
+      if (nbSessions.get() > 0)
+        System.out.print(sessionsTime.get() / (long) nbSessions.get() / 1000L + " seconds");
       else
         System.out.print("0 second");
       System.out.println("</B></div>");

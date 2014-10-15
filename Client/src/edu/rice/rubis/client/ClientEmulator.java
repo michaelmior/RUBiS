@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.GregorianCalendar;
+import java.util.concurrent.atomic.AtomicReference;
 
 import edu.rice.rubis.beans.TimeManagement;
 import edu.rice.rubis.client.RUBiSProperties;
@@ -56,7 +57,7 @@ public class ClientEmulator
   private URLGenerator    urlGen          = null;
 
   // URL generator corresponding to the version to be used (PHP)
-  private static float    slowdownFactor  = 0;
+  private static AtomicReference<Float> slowdownFactor = new AtomicReference<Float>(new Float(0));
 
   private static volatile boolean  endOfSimulation = false;
 
@@ -87,7 +88,7 @@ public class ClientEmulator
    */
   private void setSlowDownFactor(float newValue)
   {
-    slowdownFactor = newValue;
+    slowdownFactor.lazySet(new Float(newValue));
   }
 
   /**
@@ -98,7 +99,7 @@ public class ClientEmulator
    */
   public static float getSlowDownFactor()
   {
-    return slowdownFactor;
+    return slowdownFactor.get();
   }
 
   /**
