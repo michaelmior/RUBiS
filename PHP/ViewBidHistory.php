@@ -44,10 +44,12 @@
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
-            $itemName = array_values($link->I1123555240->get($itemId))[0];
+            $itemName = array_values($link->I1123555240->get($itemId));
+            $itemName = $itemName[0];
         } catch (cassandra\NotFoundException $e) {
             try {
-                $itemName = array_values($link->I862781479->get($itemId))[0];
+                $itemName = array_values($link->I862781479->get($itemId));
+                $itemName = $itemName[0];
             } catch (cassandra\NotFoundException $e) {
                 die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
             }

@@ -174,7 +174,8 @@
         $sellerNameRow = $link->users->get($row["seller"], $column_slice=null, $column_names=array("nickname"));
         $sellerName = $sellerNameRow["nickname"];
     } else {
-        $sellerName = array_values($link->I3318501374->get($row["seller"]))[0];
+        $sellerName = array_values($link->I3318501374->get($row["seller"]));
+        $sellerName = $sellerName[0];
     }
 
     print("<TR><TD>Quantity<TD><b><BIG>".$row["quantity"]."</BIG></b>\n");
