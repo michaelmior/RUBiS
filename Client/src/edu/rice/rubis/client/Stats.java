@@ -69,7 +69,7 @@ public class Stats
     minTime = new AtomicLong[nbOfStats];
     maxTime = new AtomicLong[nbOfStats];
     totalTime = new AtomicLong[nbOfStats];
-    for (int i=0; i <= nbOfStats; i++) {
+    for (int i=0; i < nbOfStats; i++) {
         count[i] = new AtomicInteger();
         error[i] = new AtomicInteger();
         minTime[i] = new AtomicLong();
