@@ -490,7 +490,8 @@ public class UserSession extends Thread
 
     // XXX Disable region browsing
     if (state == 6) { state = 4; }
-    if (state == 7) { state = 5; }
+    if (state == 7) { state = 4; }
+    if (state == 8) { state = 5; }
 
     switch (state)
     {
