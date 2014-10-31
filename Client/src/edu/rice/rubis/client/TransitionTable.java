@@ -417,10 +417,7 @@ public class TransitionTable
   // TPC-W spec for Think Time (Clause 5.3.2.1) and USMD (Clause 6.1.9.2)
   private long TPCWthinkTime()
   {
-    double r = rand.nextDouble();
-    if (r < (double) 4.54e-5)
-      return ((long) (r + 0.5));
-    return ((long) ((((double) -7000.0) * Math.log(r)) + 0.5));
+    return 0L;
   }
 
 }
