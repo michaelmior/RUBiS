@@ -210,6 +210,7 @@ public class UserSession extends Thread
     if (retry == 5)
       return null;
 
+    /*
     // Look for any image to download
     Vector images = new Vector();
     int index = HTMLReply.indexOf("<IMG SRC=\"");
@@ -244,6 +245,7 @@ public class UserSession extends Thread
       }
       images.removeElementAt(0);
     }
+    */
 
     return HTMLReply;
   }
