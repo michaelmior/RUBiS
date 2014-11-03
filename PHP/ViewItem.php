@@ -54,7 +54,13 @@
         $cf = $link->I2589792665;
         $cf->return_format = ColumnFamily::ARRAY_FORMAT;
         $maxBid = 0;
-        foreach ($cf->get($itemId) as $bid) {
+        try {
+          $bidResults = $cf->get($itemId);
+        } catch (cassandra\NotFoundException $e) {
+          $bidResults = array();
+        }
+
+        foreach ($bidResults as $bid) {
             if (strcmp($bid[0][1], 'bid') === 0) {
               $maxBid = max($maxBid, intval($bid[1]));
             }
