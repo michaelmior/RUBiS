@@ -55,7 +55,14 @@
         $cf = $link->I2607716123;
         $cf->return_format = ColumnFamily::ARRAY_FORMAT;
         $comments = array();
-        foreach ($cf->get($userId) as $comment) {
+
+        try {
+            $fetchedComments = $cf->get($userId);
+        } catch (cassandra\NotFoundException $e) {
+            $fetchedComments = array();
+        }
+
+        foreach ($fetchedComments as $comment) {
             $id = $comment[0][0];
             if (!isset($comments[$id])) {
                 $comments[$id] = array();
