@@ -38,6 +38,10 @@
             }
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+        if ($USE_CANNED) {
+          $row = array ( 'buy_now' => '0', 'category' => '7', 'description' => 'This incredible item is exactly what you need !
+                It has a lot of ', 'end_date' => '2002-04-02 01:35:59', 'initial_price' => '4607', 'max_bid' => '4625', 'name' => 'RUBiS automatically generated item #33007', 'nb_of_bids' => '4', 'quantity' => '2', 'reserve_price' => '0', 'seller' => '243745', 'start_date' => '2002-03-26 01:35:59', );
+        } else {
         try {
             $row = $link->items->get($itemId);
         } catch (cassandra\NotFoundException $e) {
@@ -46,6 +50,7 @@
             } catch (cassandra\NotFoundException $e) {
                 die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
             }
+        }
         }
     }
 
@@ -77,8 +82,15 @@
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
-            $bid_ids = array_keys($link->bid_item->get($itemId));
-            if ($USE_MULTIGET) {
+            if ($USE_CANNED) {
+              $bid_ids = array ( 0 => 5054860, 1 => 5058956, 2 => 5059993, 3 => 5060247, );
+            } else {
+              $bid_ids = array_keys($link->bid_item->get($itemId));
+            }
+
+            if ($USE_CANNED) {
+              $bids = array ( 5054860 => array ( 'bid' => '4616', ), 5058956 => array ( 'bid' => '4621', ), 5059993 => array ( 'bid' => '11', ), 5060247 => array ( 'bid' => '6', ), );
+            } elseif ($USE_MULTIGET) {
               $bids = $link->bids->multiget($bid_ids, $column_slice=null, $column_names=array("bid"));
             } else {
               $bids = array_map(function($bid_id) use ($link) { return $link->bids->get($bid_id, $column_slice=null, $column_names=array("bid")); }, $bid_ids);
@@ -134,9 +146,15 @@
                 }
             } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
                 // Fetch bids, sort, and take the top "quantity" number
-                $bid_ids = array_keys($link->bid_item->get($itemId));
+                if ($USE_CANNED) {
+                  $bid_ids = array ( 0 => 5054860, 1 => 5058956, 2 => 5059993, 3 => 5060247, );
+                } else {
+                  $bid_ids = array_keys($link->bid_item->get($itemId));
+                }
 
-                if ($USE_MULTIGET) {
+                if ($USE_CANNED) {
+                  $bids = array ( 5054860 => array ( 'bid' => '4616', 'date' => '2001-10-19 01:07:33', 'item_id' => '500561', 'max_bid' => '4624', 'qty' => '2', 'user_id' => '243745', ), 5058956 => array ( 'bid' => '4621', 'date' => '2001-10-19 01:26:40', 'item_id' => '500561', 'max_bid' => '4625', 'qty' => '2', 'user_id' => '243745', ), 5059993 => array ( 'bid' => '11', 'date' => '2001-10-19 01:35:29', 'item_id' => '500561', 'max_bid' => '21', 'qty' => '1', 'user_id' => '243745', ), 5060247 => array ( 'bid' => '6', 'date' => '2001-10-19 01:37:13', 'item_id' => '500561', 'max_bid' => '11', 'qty' => '1', 'user_id' => '243745', ), );
+                } elseif ($USE_MULTIGET) {
                   $bids = $link->bids->multiget($bid_ids);
                 } else {
                   $bids = array_map(function ($bid_id) use($link) { return $link->bids->get($bid_id); }, $bid_ids);
@@ -168,7 +186,11 @@
         } elseif ($CURRENT_SCHEMA >= SchemaType::HALF) {
             $nbOfBids = $link->I2589792665->get_count($itemId);
         } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
-            $nbOfBids = $link->bid_item->get_count($itemId);
+            if ($USE_CANNED) {
+              $nbOfBids = 4;
+            } else {
+              $nbOfBids = $link->bid_item->get_count($itemId);
+            }
         }
     }
 
@@ -188,7 +210,11 @@
     }
 
     if ($CURRENT_SCHEMA == SchemaType::RELATIONAL) {
-        $sellerNameRow = $link->users->get($row["seller"], $column_slice=null, $column_names=array("nickname"));
+        if ($USE_CANNED) {
+          $sellerNameRow = array ( 'nickname' => 'user243745', );
+        } else {
+          $sellerNameRow = $link->users->get($row["seller"], $column_slice=null, $column_names=array("nickname"));
+        }
         $sellerName = $sellerNameRow["nickname"];
     } else {
         $sellerName = array_values($link->I3318501374->get($row["seller"]));

@@ -55,6 +55,9 @@
             }
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
+        if ($USE_CANNED) {
+          $itemNameRow = array ( 'name' => 'RUBiS automatically generated item #33007', );
+        } else {
         try {
             $itemNameRow = $link->items->get($itemId, $column_slice=null, $column_names=array("name"));
         } catch (cassandra\NotFoundException $e) {
@@ -63,6 +66,7 @@
             } catch (cassandra\NotFoundException $e) {
                 die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
             }
+        }
         }
         $itemName = $itemNameRow["name"];
     }
@@ -141,9 +145,15 @@
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
-            $bid_ids = array_keys($link->bid_item->get($itemId));
+            if ($USE_CANNED) {
+              $bid_ids = array ( 0 => 5054860, 1 => 5058956, 2 => 5059993, 3 => 5060247, );
+            } else {
+              $bid_ids = array_keys($link->bid_item->get($itemId));
+            }
 
-            if ($USE_MULTIGET) {
+            if ($USE_CANNED) {
+              $bidsListResult = array ( 5054860 => array ( 'bid' => '4616', 'date' => '2001-10-19 01:07:33', 'user_id' => '243745', ), 5058956 => array ( 'bid' => '4621', 'date' => '2001-10-19 01:26:40', 'user_id' => '243745', ), 5059993 => array ( 'bid' => '11', 'date' => '2001-10-19 01:35:29', 'user_id' => '243745', ), 5060247 => array ( 'bid' => '6', 'date' => '2001-10-19 01:37:13', 'user_id' => '243745', ), );
+            } elseif ($USE_MULTIGET) {
               $bidsListResult = $link->bids->multiget($bid_ids, $column_slice=null, $column_slice=array("bid", "date", "user_id"));
             } else {
               $bidsListResult = array_map(function($bid_id) use($link) { return $link->bids->get($bid_id, $column_slice=null, $column_slice=array("bid", "date", "user_id")); }, $bid_ids);
@@ -172,7 +182,11 @@
             if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
                 $nickname = $usersResult[$userId];
             } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
-                $userNameRow = $link->users->get($userId, $column_slice=null, $column_names=array("nickname"));
+                if ($USE_CANNED) {
+                  $userNameRow = array ( 'nickname' => 'user243745', );
+                } else {
+                  $userNameRow = $link->users->get($userId, $column_slice=null, $column_names=array("nickname"));
+                }
                 $nickname = $userNameRow["nickname"];
             }
         } else {

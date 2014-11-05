@@ -23,7 +23,11 @@
 
     if ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
-            $userRow = $link->users->get($userId);
+            if ($USE_CANNED) {
+              $userRow = array ( 'balance' => '0', 'creation_date' => '2001-10-17 08:27:50', 'email' => 'Great549946.User549946@rubis.com', 'firstname' => 'Great549946', 'lastname' => 'User549946', 'nickname' => 'user549946', 'password' => 'password549946', 'rating' => '-5', 'region' => '6', );
+            } else {
+              $userRow = $link->users->get($userId);
+            }
         } catch (cassandra\NotFoundException $e) {
             $userRow = null;
         }
@@ -75,10 +79,18 @@
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
-            $comment_ids = array_keys($link->to_user->get($userId));
+            if ($USE_CANNED) {
+              $comment_ids = array ( 0 => 3, );
+            } else {
+              $comment_ids = array_keys($link->to_user->get($userId));
+            }
 
             if ($USE_MULTIGET) {
-              $commentsResult = $link->comments->multiget($comment_ids);
+              if ($USE_CANNED) {
+                $commentsResult = array ( 3 => array ( 'comment' => 'This is a very bad comment. Stay', 'date' => '2001-10-17 19:39:25', 'from_user_id' => '776067', 'item_id' => '3', 'rating' => '-5', 'to_user_id' => '549946', ), );
+              } else {
+                $commentsResult = $link->comments->multiget($comment_ids);
+              }
             } else {
               $commentsResult = array_map(function ($comment_id) use($link) { return $link->comments->get($comment_id); }, $comment_ids);
             }
@@ -104,7 +116,11 @@
             }
         } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
             try {
-                $authorRow = $link->users->get($authorId, $column_slice=null, $column_names=array("nickname"));
+                if ($USE_CANNED) {
+                  $authorRow = array ( 'nickname' => 'user776067', );
+                } else {
+                  $authorRow = $link->users->get($authorId, $column_slice=null, $column_names=array("nickname"));
+                }
             } catch (cassandra\NotFoundException $e) {
                 $authorRow = null;
             }
