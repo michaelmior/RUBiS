@@ -56,14 +56,18 @@
     // Get the comments about the user
     // Q: SELECT id, to_user_id, item_id, rating, date, comment FROM comments WHERE comments.to_user_id = ?
     if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
-        $cf = $link->I2607716123;
-        $cf->return_format = ColumnFamily::ARRAY_FORMAT;
         $comments = array();
 
+        if ($USE_CANNED) {
+          $fetchedComments = array ( 0 => array ( 0 => array ( 0 => '3', 1 => 'comment', ), 1 => 'This is a very bad comment. Stay', ), 1 => array ( 0 => array ( 0 => '3', 1 => 'date', ), 1 => '2001-10-17 19:39:25', ), 2 => array ( 0 => array ( 0 => '3', 1 => 'from_user_id', ), 1 => '776067', ), 3 => array ( 0 => array ( 0 => '3', 1 => 'item_id', ), 1 => '3', ), 4 => array ( 0 => array ( 0 => '3', 1 => 'rating', ), 1 => '-5', ), );
+        } else {
         try {
+            $cf = $link->I2607716123;
+            $cf->return_format = ColumnFamily::ARRAY_FORMAT;
             $fetchedComments = $cf->get($userId);
         } catch (cassandra\NotFoundException $e) {
             $fetchedComments = array();
+        }
         }
 
         foreach ($fetchedComments as $comment) {
@@ -109,7 +113,11 @@
         // Q: SELECT id, nickname FROM users WHERE users.id = ?
         if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
             try {
-                $authorName = array_values($link->I3318501374->get($authorId));
+                if ($USE_CANNED) {
+                  $authorName = array ( 0 => 'user776067', );
+                } else {
+                  $authorName = array_values($link->I3318501374->get($authorId));
+                }
                 $authorRow = array("nickname" => $authorName[0]);
             } catch (cassandra\NotFoundException $e) {
                 $authorRow = null;

@@ -20,23 +20,27 @@
     // Q: SELECT name FROM items WHERE items.id = ?
     // Q: SELECT name FROM olditems WHERE olditems.id = ?
     if ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
+        if ($USE_CANNED) {
+            $nameResult =  array ( 0 => array ( 0 => array ( 0 => '500561', 1 => 'buy_now', ), 1 => '0', ), 1 => array ( 0 => array ( 0 => '500561', 1 => 'category', ), 1 => '7', ), 2 => array ( 0 => array ( 0 => '500561', 1 => 'description', ), 1 => 'This incredible item is exactly what you need !
+                It has a lot of ', ), 3 => array ( 0 => array ( 0 => '500561', 1 => 'end_date', ), 1 => '2002-04-02 01:35:59', ), 4 => array ( 0 => array ( 0 => '500561', 1 => 'initial_price', ), 1 => '4607', ), 5 => array ( 0 => array ( 0 => '500561', 1 => 'max_bid', ), 1 => '4625', ), 6 => array ( 0 => array ( 0 => '500561', 1 => 'name', ), 1 => 'RUBiS automatically generated item #33007', ), 7 => array ( 0 => array ( 0 => '500561', 1 => 'nb_of_bids', ), 1 => '4', ), 8 => array ( 0 => array ( 0 => '500561', 1 => 'quantity', ), 1 => '2', ), 9 => array ( 0 => array ( 0 => '500561', 1 => 'reserve_price', ), 1 => '0', ), 10 => array ( 0 => array ( 0 => '500561', 1 => 'seller', ), 1 => '243745', ), 11 => array ( 0 => array ( 0 => '500561', 1 => 'start_date', ), 1 => '2002-03-26 01:35:59', ), );
+        } else {
         try {
             $cf = $link->I2115247770;
             $cf->return_format = ColumnFamily::ARRAY_FORMAT;
-            $row = call_user_func_array('array_merge', array_map(function ($elem) {
-              return array($elem[0][1] => $elem[1]);
-            }, $cf->get($itemId)));
+            $nameResult = $cf->get($itemId);
         } catch (cassandra\NotFoundException $e) {
             try {
               $cf = $link->I810361528;
               $cf->return_format = ColumnFamily::ARRAY_FORMAT;
-              $row = call_user_func_array('array_merge', array_map(function ($elem) {
-                return array($elem[0][1] => $elem[1]);
-              }, $cf->get($itemId)));
+              $nameResult = $cf->get($itemId);
             } catch (cassandra\NotFoundException $e) {
                 die("<h3>ERROR: Sorry, but this item does not exist.</h3><br>\n");
             }
         }
+        }
+        $row = call_user_func_array('array_merge', array_map(function ($elem) {
+            return array($elem[0][1] => $elem[1]);
+        }, $nameResult));
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         if ($USE_CANNED) {
           $row = array ( 'buy_now' => '0', 'category' => '7', 'description' => 'This incredible item is exactly what you need !
@@ -72,10 +76,15 @@
         }
     } elseif ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
-            $cf = $link->I2744950719;
-            $cf->return_format = ColumnFamily::ARRAY_FORMAT;
-            $slice = new ColumnSlice('', '', $count=1);
-            $maxBid = $cf->get($itemId, $slice);
+            if ($USE_CANNED) {
+              $maxBid = array ( 0 => array ( 0 => array ( 0 => '11', ), 1 => ' ', ), );
+            } else {
+              $cf = $link->I2744950719;
+              $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+              $slice = new ColumnSlice('', '', $count=1);
+              $maxBid = $cf->get($itemId, $slice);
+            }
+
             $maxBid = intval($maxBid[0][0][0]);
         } catch (cassandra\NotFoundException $e) {
             $maxBid = 0;
@@ -111,11 +120,16 @@
         if ($row["quantity"] > 1) {
             // Q: SELECT bid, qty FROM bids WHERE bids.item_id = ? ORDER BY bids.bid LIMIT 5
             if ($CURRENT_SCHEMA == SchemaType::UNCONSTRAINED) {
-                $cf = $link->I2203934753;
-                $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+                if ($USE_CANNED) {
+                    $bidResult = array ( 0 => array ( 0 => array ( 0 => '11', 1 => '5059993', ), 1 => '1', ), 1 => array ( 0 => array ( 0 => '4616', 1 => '5054860', ), 1 => '2', ), 2 => array ( 0 => array ( 0 => '4621', 1 => '5058956', ), 1 => '2', ), 3 => array ( 0 => array ( 0 => '6', 1 => '5060247', ), 1 => '1', ), );
+                } else {
+                    $cf = $link->I2203934753;
+                    $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+                    $bidResult = $cf->get($itemId);
+                }
 
                 $nb = 0;
-                foreach ($cf->get($itemId) as $bid) {
+                foreach ($bidResult as $bid) {
                     $nb += $bid[1];
                     if ($nb > $row["quantity"]) {
                         $maxBid = $row["max_bid"];
@@ -181,16 +195,16 @@
         $firstBid = $maxBid;
 
         // Q: SELECT id FROM bids WHERE bids.item_id = ?
+        if ($USE_CANNED) {
+            $nbOfBids = 4;
+        } else {
         if ($CURRENT_SCHEMA == SchemaType::UNCONSTRAINED) {
             $nbOfBids = $link->I4004689239->get_count($itemId);
         } elseif ($CURRENT_SCHEMA >= SchemaType::HALF) {
             $nbOfBids = $link->I2589792665->get_count($itemId);
         } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
-            if ($USE_CANNED) {
-              $nbOfBids = 4;
-            } else {
-              $nbOfBids = $link->bid_item->get_count($itemId);
-            }
+            $nbOfBids = $link->bid_item->get_count($itemId);
+        }
         }
     }
 
@@ -217,7 +231,11 @@
         }
         $sellerName = $sellerNameRow["nickname"];
     } else {
-        $sellerName = array_values($link->I3318501374->get($row["seller"]));
+        if ($USE_CANNED) {
+          $sellerName = array ( 0 => 'user243745', );
+        } else {
+          $sellerName = array_values($link->I3318501374->get($row["seller"]));
+        }
         $sellerName = $sellerName[0];
     }
 
