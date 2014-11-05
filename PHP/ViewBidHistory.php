@@ -133,6 +133,8 @@
             print ("<h2>There is no bid for $itemName. </h2><br>");
             $bidsListResult = array();
         }
+
+        print ("<h2><center>Bid history for $itemName</center></h2><br>");
     } elseif ($CURRENT_SCHEMA >= SchemaType::UNCONSTRAINED) {
         try {
         $bidsListResult = array();
@@ -170,6 +172,8 @@
             foreach ($rawUsersResult as $user) {
                 $usersResult[$user[0][0]] = $user[1];
             }
+
+            print ("<h2><center>Bid history for $itemName</center></h2><br>");
         } catch (cassandra\NotFoundException $e) {
             print ("<h2>There is no bid for $itemName. </h2><br>");
             $bidsListResult = array();
