@@ -60,13 +60,17 @@
 
     // Q: SELECT bid FROM bids WHERE bids.item_id = ? ORDER BY bids.bid LIMIT 1
     if ($CURRENT_SCHEMA >= SchemaType::HALF) {
-        $cf = $link->I2589792665;
-        $cf->return_format = ColumnFamily::ARRAY_FORMAT;
         $maxBid = 0;
+        if ($USE_CANNED) {
+          $bidResults =  array ( 0 => array ( 0 => array ( 0 => '5054860', 1 => 'bid', ), 1 => '4616', ), 1 => array ( 0 => array ( 0 => '5054860', 1 => 'date', ), 1 => '2001-10-19 01:07:33', ), 2 => array ( 0 => array ( 0 => '5054860', 1 => 'qty', ), 1 => '2', ), 3 => array ( 0 => array ( 0 => '5054860', 1 => 'user_id', ), 1 => '243745', ), 4 => array ( 0 => array ( 0 => '5058956', 1 => 'bid', ), 1 => '4621', ), 5 => array ( 0 => array ( 0 => '5058956', 1 => 'date', ), 1 => '2001-10-19 01:26:40', ), 6 => array ( 0 => array ( 0 => '5058956', 1 => 'qty', ), 1 => '2', ), 7 => array ( 0 => array ( 0 => '5058956', 1 => 'user_id', ), 1 => '243745', ), 8 => array ( 0 => array ( 0 => '5059993', 1 => 'bid', ), 1 => '11', ), 9 => array ( 0 => array ( 0 => '5059993', 1 => 'date', ), 1 => '2001-10-19 01:35:29', ), 10 => array ( 0 => array ( 0 => '5059993', 1 => 'qty', ), 1 => '1', ), 11 => array ( 0 => array ( 0 => '5059993', 1 => 'user_id', ), 1 => '243745', ), 12 => array ( 0 => array ( 0 => '5060247', 1 => 'bid', ), 1 => '6', ), 13 => array ( 0 => array ( 0 => '5060247', 1 => 'date', ), 1 => '2001-10-19 01:37:13', ), 14 => array ( 0 => array ( 0 => '5060247', 1 => 'qty', ), 1 => '1', ), 15 => array ( 0 => array ( 0 => '5060247', 1 => 'user_id', ), 1 => '243745', ), );
+        } else {
         try {
+          $cf = $link->I2589792665;
+          $cf->return_format = ColumnFamily::ARRAY_FORMAT;
           $bidResults = $cf->get($itemId);
         } catch (cassandra\NotFoundException $e) {
           $bidResults = array();
+        }
         }
 
         foreach ($bidResults as $bid) {
@@ -137,11 +141,16 @@
                     }
                 }
             } elseif ($CURRENT_SCHEMA >= SchemaType::HALF) {
-                $cf = $link->I2589792665;
-                $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+                if ($USE_CANNED) {
+                  $bidResult = array ( 0 => array ( 0 => array ( 0 => '5054860', 1 => 'bid', ), 1 => '4616', ), 1 => array ( 0 => array ( 0 => '5054860', 1 => 'date', ), 1 => '2001-10-19 01:07:33', ), 2 => array ( 0 => array ( 0 => '5054860', 1 => 'qty', ), 1 => '2', ), 3 => array ( 0 => array ( 0 => '5054860', 1 => 'user_id', ), 1 => '243745', ), 4 => array ( 0 => array ( 0 => '5058956', 1 => 'bid', ), 1 => '4621', ), 5 => array ( 0 => array ( 0 => '5058956', 1 => 'date', ), 1 => '2001-10-19 01:26:40', ), 6 => array ( 0 => array ( 0 => '5058956', 1 => 'qty', ), 1 => '2', ), 7 => array ( 0 => array ( 0 => '5058956', 1 => 'user_id', ), 1 => '243745', ), 8 => array ( 0 => array ( 0 => '5059993', 1 => 'bid', ), 1 => '11', ), 9 => array ( 0 => array ( 0 => '5059993', 1 => 'date', ), 1 => '2001-10-19 01:35:29', ), 10 => array ( 0 => array ( 0 => '5059993', 1 => 'qty', ), 1 => '1', ), 11 => array ( 0 => array ( 0 => '5059993', 1 => 'user_id', ), 1 => '243745', ), 12 => array ( 0 => array ( 0 => '5060247', 1 => 'bid', ), 1 => '6', ), 13 => array ( 0 => array ( 0 => '5060247', 1 => 'date', ), 1 => '2001-10-19 01:37:13', ), 14 => array ( 0 => array ( 0 => '5060247', 1 => 'qty', ), 1 => '1', ), 15 => array ( 0 => array ( 0 => '5060247', 1 => 'user_id', ), 1 => '243745', ), );
+                } else {
+                  $cf = $link->I2589792665;
+                  $cf->return_format = ColumnFamily::ARRAY_FORMAT;
+                  $bidResult = $cf->get($itemId);
+                }
 
                 $bids = array();
-                foreach ($cf->get($itemId) as $bid) {
+                foreach ($bidResult as $bid) {
                     $id = $bid[0][0];
                     if (!isset($bids[$id])) {
                         $bids[$id] = array();
