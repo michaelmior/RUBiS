@@ -106,7 +106,7 @@
             } elseif ($USE_MULTIGET) {
               $bids = $link->bids->multiget($bid_ids, $column_slice=null, $column_names=array("bid"));
             } else {
-              $bids = array_map(function($bid_id) use ($link) { return $link->bids->get($bid_id, $column_slice=null, $column_names=array("bid")); }, $bid_ids);
+              $bids = array_combine($bid_ids, array_map(function($bid_id) use ($link) { return $link->bids->get($bid_id, $column_slice=null, $column_names=array("bid")); }, $bid_ids));
             }
             $bids = call_user_func_array('array_merge', array_map('array_values', $bids));
             $maxBid = count($bids) > 0 ? max($bids) : 0;
@@ -180,7 +180,7 @@
                 } elseif ($USE_MULTIGET) {
                   $bids = $link->bids->multiget($bid_ids);
                 } else {
-                  $bids = array_map(function ($bid_id) use($link) { return $link->bids->get($bid_id); }, $bid_ids);
+                  $bids = array_combine($bid_ids, array_map(function ($bid_id) use($link) { return $link->bids->get($bid_id); }, $bid_ids));
                 }
 
                 uasort(

@@ -122,7 +122,7 @@
             } elseif ($USE_MULTIGET) {
               $users = array_values($link->I3318501374->multiget($userIds));
             } else {
-              $users = array_values(array_map(function($userId) use($link) { return $link->I3318501374->get($userId); }, $userIds));
+              $users = array_map(function($userId) use($link) { return $link->I3318501374->get($userId); }, $userIds);
             }
 
             $usersResult = array();
@@ -191,7 +191,7 @@
             } elseif ($USE_MULTIGET) {
               $bidsListResult = $link->bids->multiget($bid_ids, $column_slice=null, $column_slice=array("bid", "date", "user_id"));
             } else {
-              $bidsListResult = array_map(function($bid_id) use($link) { return $link->bids->get($bid_id, $column_slice=null, $column_slice=array("bid", "date", "user_id")); }, $bid_ids);
+                $bidsListResult = array_combine($bid_ids, array_map(function($bid_id) use($link) { return $link->bids->get($bid_id, $column_slice=null, $column_slice=array("bid", "date", "user_id")); }, $bid_ids));
             }
 
             print ("<h2><center>Bid history for $itemName</center></h2><br>");

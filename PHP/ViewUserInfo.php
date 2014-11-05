@@ -96,7 +96,7 @@
                 $commentsResult = $link->comments->multiget($comment_ids);
               }
             } else {
-              $commentsResult = array_map(function ($comment_id) use($link) { return $link->comments->get($comment_id); }, $comment_ids);
+              $commentsResult = array_combine($comment_ids, array_map(function ($comment_id) use($link) { return $link->comments->get($comment_id); }, $comment_ids));
             }
         } catch (cassandra\NotFoundException $e) {
             $commentsResult = array();
