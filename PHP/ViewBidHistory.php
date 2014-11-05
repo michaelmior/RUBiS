@@ -96,7 +96,12 @@
                 $userIds[] = $user[1];
             }
 
-            $users = array_values($link->I3318501374->multiget($userIds));
+            if ($USE_MULTIGET) {
+              $users = array_values($link->I3318501374->multiget($userIds));
+            } else {
+              $users = array_values(array_map(function($userId) use($link) { return $link->I3318501374->get($userId); }, $userIds));
+            }
+
             $usersResult = array();
             foreach ($users as $user) {
                 $usersResult = $usersResult + $user;
@@ -137,7 +142,13 @@
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $bid_ids = array_keys($link->bid_item->get($itemId));
-            $bidsListResult = $link->bids->multiget($bid_ids, $column_slice=null, $column_slice=array("bid", "date", "user_id"));
+
+            if ($USE_MULTIGET) {
+              $bidsListResult = $link->bids->multiget($bid_ids, $column_slice=null, $column_slice=array("bid", "date", "user_id"));
+            } else {
+              $bidsListResult = array_map(function($bid_id) use($link) { return $link->bids->get($bid_id, $column_slice=null, $column_slice=array("bid", "date", "user_id")); }, $bid_ids);
+            }
+
             print ("<h2><center>Bid history for $itemName</center></h2><br>");
         } catch (cassandra\NotFoundException $e) {
             print ("<h2>There is no bid for $itemName. </h2><br>");

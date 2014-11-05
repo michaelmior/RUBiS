@@ -78,7 +78,12 @@
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $bid_ids = array_keys($link->bid_item->get($itemId));
-            $bids = call_user_func_array('array_merge', array_map('array_values', $link->bids->multiget($bid_ids, $column_slice=null, $column_names=array("bid"))));
+            if ($USE_MULTIGET) {
+              $bids = $link->bids->multiget($bid_ids, $column_slice=null, $column_names=array("bid"));
+            } else {
+              $bids = array_map(function($bid_id) use ($link) { return $link->bids->get($bid_id, $column_slice=null, $column_names=array("bid")); }, $bid_ids);
+            }
+            $bids = call_user_func_array('array_merge', array_map('array_values', $bids));
             $maxBid = count($bids) > 0 ? max($bids) : 0;
         } catch (cassandra\NotFoundException $e) {
             $maxBid = 0;
@@ -130,7 +135,13 @@
             } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
                 // Fetch bids, sort, and take the top "quantity" number
                 $bid_ids = array_keys($link->bid_item->get($itemId));
-                $bids = $link->bids->multiget($bid_ids);
+
+                if ($USE_MULTIGET) {
+                  $bids = $link->bids->multiget($bid_ids);
+                } else {
+                  $bids = array_map(function ($bid_id) use($link) { return $link->bids->get($bid_id); }, $bid_ids);
+                }
+
                 uasort(
                     $bids,
                     function ($a, $b) {

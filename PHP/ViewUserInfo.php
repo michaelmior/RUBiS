@@ -76,7 +76,12 @@
     } elseif ($CURRENT_SCHEMA >= SchemaType::RELATIONAL) {
         try {
             $comment_ids = array_keys($link->to_user->get($userId));
-            $commentsResult = $link->comments->multiget($comment_ids);
+
+            if ($USE_MULTIGET) {
+              $commentsResult = $link->comments->multiget($comment_ids);
+            } else {
+              $commentsResult = array_map(function ($comment_id) use($link) { return $link->comments->get($comment_id); }, $comment_ids);
+            }
         } catch (cassandra\NotFoundException $e) {
             $commentsResult = array();
         }

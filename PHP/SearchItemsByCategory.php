@@ -71,7 +71,12 @@
             $slice = new ColumnSlice('', '', $count=($page + 1) * $nbOfItems);
             $item_ids = array_keys($link->category_id->get($categoryId, $slice));
             $item_ids = array_slice($item_ids, $page * $nbOfItems, ($page + 1) * $nbOfItems);
-            $items = $link->items->multiget($item_ids, $column_slice=null, $column_names=array("name", "initial_price", "max_bid", "nb_of_bids", "end_date"));
+
+            if ($USE_MULTIGET) {
+              $items = $link->items->multiget($item_ids, $column_slice=null, $column_names=array("name", "initial_price", "max_bid", "nb_of_bids", "end_date"));
+            } else {
+              $items = array_map(function ($item_id) use($link) { return $link->items->get($item_id, $column_slice=null, $column_names=array("name", "initial_price", "max_bid", "nb_of_bids", "end_date")); }, $item_ids);
+            }
             $items = array_filter($items, function($item) { return $item["end_date"] > "2002-04-" && $item["end_date"] < "2002-05"; });
         } catch (cassandra\NotFoundException $e) {
             $found = false;

@@ -40,6 +40,7 @@ abstract class SchemaType {
 }
 
 $CURRENT_SCHEMA = SchemaType::HALF;
+$USE_MULTIGET = true;
 
 function getDatabaseLink(&$link)
 {
