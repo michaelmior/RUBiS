@@ -39,13 +39,15 @@ abstract class SchemaType {
     const HALF = 3;
 }
 
-$CURRENT_SCHEMA = SchemaType::HALF;
+$CURRENT_SCHEMA = SchemaType::RELATIONAL;
 $USE_MULTIGET = true;
 $USE_CANNED = false;
 
 function getDatabaseLink(&$link)
 {
-  $pool = new ConnectionPool('RUBiS');
+  $servers = array('127.0.0.1');
+  shuffle($servers);
+  $pool = new ConnectionPool('RUBiS', $servers);
   $link = new ColumnFamilies($pool);
 }
 
